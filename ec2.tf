@@ -8,7 +8,7 @@ resource "aws_instance" "web_a_internship_dinh" {
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.private_subnet_a.id
   vpc_security_group_ids      = [aws_security_group.web_internship_dinh.id]
-  associate_public_ip_address = false  # Instance is private (NAT outbound)
+  associate_public_ip_address = false # Instance is private (NAT outbound)
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile_internship_dinh.name
 
   tags = {

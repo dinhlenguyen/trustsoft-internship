@@ -185,11 +185,11 @@ resource "aws_security_group" "web_internship_dinh" {
   vpc_id      = aws_vpc.vpc_internship_dinh.id
 
   ingress {
-    description              = "Allow HTTP from ALB"
-    from_port                = 80
-    to_port                  = 80
-    protocol                 = "tcp"
-    security_groups          = [aws_security_group.alb_internship_dinh.id]
+    description     = "Allow HTTP from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_internship_dinh.id]
   }
 
   egress {

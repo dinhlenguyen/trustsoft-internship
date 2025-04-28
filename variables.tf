@@ -5,7 +5,7 @@
 variable "aws_region" {
   description = "AWS Region to deploy into"
   type        = string
-  default     = "eu-west-1"  # Ireland
+  default     = "eu-west-1" # Ireland
 }
 
 ########################################
