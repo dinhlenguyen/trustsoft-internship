@@ -15,7 +15,10 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 
 ```plaintext
 ts-internship/
-├── providers.tf      # AWS provider configuration and Terraform settings
+├── infra-bootstrap/
+│   └── backend_setup.tf      # Create S3 bucket and DynamoDB table for backend
+│
+├── providers.tf      # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
 ├── variables.tf      # Input variables for flexible configuration
 ├── outputs.tf        # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
 ├── vpc_sg.tf         # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
@@ -63,6 +66,22 @@ Confirm `yes` when prompted.
 - **EC2 instances** are private (reachable only through Load Balancer and outbound through NAT Gateway).
 - **NAT Gateway** enables safe outbound internet access (for updates, patches, etc.).
 
+## 📤 Remote State Management
+
+This project uses a **remote backend** to store the Terraform state securely and safely.
+
+### State Storage
+- The Terraform state file (`terraform.tfstate`) is stored in an encrypted S3 bucket.
+- **Bucket name:** `s3_backend_internship_dinh`
+
+### State Locking
+- A DynamoDB table named `lockfile_internship_dinh` is used to manage state locks and prevent concurrent modifications.
+
+### Backend Settings
+- Encryption at rest is enabled (AES-256 S3 encryption).
+- Versioning is enabled on the S3 bucket to allow recovery of previous state versions.
+
+
 ## 🖥️ EC2 Access via Systems Manager Session Manager
 
 Since the EC2 instances are deployed into private subnets with no public IP and no SSH ports open, access is provided securely through **AWS Systems Manager Session Manager**.
@@ -92,3 +111,4 @@ After apply, Terraform will output:
 - The AMI ID (`ami_id`) must be correctly set for your region (`eu-west-1`).
 - Load Balancer traffic alternates between EC2 instances (proving health checks and load balancing).
 - The `.terraform.lock.hcl` file is committed for consistent provider versions.
+- Terraform state is securely stored in a remote S3 bucket with DynamoDB locking.
