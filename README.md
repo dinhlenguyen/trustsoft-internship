@@ -21,6 +21,7 @@ ts-internship/
 ├── vpc_sg.tf         # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
 ├── ec2.tf            # EC2 Instances creation with different user-data scripts
 ├── alb.tf            # Application Load Balancer setup with target groups and listeners
+├── iam.tf            # IAM Role, Policy Attachment, Instance Profile for SSM
 ```
 
 ## ⚙️ How to Deploy
@@ -61,6 +62,17 @@ Confirm `yes` when prompted.
 - **No SSH (port 22) open** to the internet.
 - **EC2 instances** are private (reachable only through Load Balancer and outbound through NAT Gateway).
 - **NAT Gateway** enables safe outbound internet access (for updates, patches, etc.).
+
+## 🖥️ EC2 Access via Systems Manager Session Manager
+
+Since the EC2 instances are deployed into private subnets with no public IP and no SSH ports open, access is provided securely through **AWS Systems Manager Session Manager**.
+
+### How to Connect
+
+1. Go to the AWS Console → **Systems Manager → Session Manager**.
+2. Click **Start Session**.
+3. Select the EC2 instance you want to connect to.
+4. You get secure shell access directly without needing SSH, keys, or public IPs.
 
 ## 📤 Outputs
 After apply, Terraform will output:
