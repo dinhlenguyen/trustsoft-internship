@@ -2,13 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.45"    # Or latest stable version; lock to major version
+      version = "~> 5.45"    
     }
   }
 
-  required_version = ">= 1.3.0"    # Or match your Terraform CLI version
+  required_version = ">= 1.3.0"    
 }
 
 provider "aws" {
-  region = var.aws_region    # Read region from variable
+  region = var.aws_region    
 }
