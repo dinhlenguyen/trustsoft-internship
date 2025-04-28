@@ -21,8 +21,6 @@ ts-internship/
 ├── vpc_sg.tf         # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
 ├── ec2.tf            # EC2 Instances creation with different user-data scripts
 ├── alb.tf            # Application Load Balancer setup with target groups and listeners
-└── terraform.tfvars  # (Optional) override variable values (not always used)
-
 ```
 
 ## ⚙️ How to Deploy
