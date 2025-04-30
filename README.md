@@ -10,7 +10,7 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 - Outputs for key resources
 
 ## 🖼️ Architecture Diagram
-![](trustsoft-internship-diagram.png)
+![Architecture Diagram](./assets/trustsoft-internship-diagram.png)
 
 ---
 
@@ -18,6 +18,8 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 
 ```plaintext
 ts-internship/
+├── assets/
+│   └── trustsoft-internship-diagram.png
 ├── infra-bootstrap/
 │   └── backend_setup.tf      # Create S3 bucket and DynamoDB table for backend
 │
@@ -29,7 +31,7 @@ ts-internship/
 ├── ec2.tf                  # EC2 Instances creation with different user-data scripts
 ├── alb.tf                  # Application Load Balancer setup with target groups and listeners
 ├── iam.tf                  # IAM Role, Policy Attachment, Instance Profile for SSM
-├── cloudwatch_alarm.tf     # Defines CPU utilization CloudWatch alarms for both EC2 instances
+└── cloudwatch_alarm.tf     # Defines CPU utilization CloudWatch alarms for both EC2 instances
 ```
 
 ## ⚙️ How to Deploy
