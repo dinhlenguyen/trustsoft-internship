@@ -86,6 +86,27 @@ This project uses a **remote backend** to store the Terraform state securely and
 
 Since the EC2 instances are deployed into private subnets with no public IP and no SSH ports open, access is provided securely through **AWS Systems Manager Session Manager**.
 
+## 📊 CloudWatch Monitoring
+
+This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 instances in private subnets.
+
+### Alarms Created:
+
+| Alarm Name                       | Monitored Instance               | Threshold | Evaluation Periods | Description                                  |
+|----------------------------------|----------------------------------|-----------|---------------------|----------------------------------------------|
+| `ec2-a-cpu-high-internship-dinh` | `ec2_web_a_internship_dinh`      | > 10%     | 2 × 2 min           | Triggers if EC2-A CPU exceeds 10% for 4 min |
+| `ec2-b-cpu-high-internship-dinh` | `ec2_web_b_internship_dinh`      | > 10%     | 2 × 2 min           | Triggers if EC2-B CPU exceeds 10% for 4 min |
+
+### Alarm Details:
+
+- **Namespace:** `AWS/EC2`
+- **Metric:** `CPUUtilization`
+- **Statistic:** `Average`
+- **Treat missing data:** `notBreaching`
+
+>  These alarms are configured with a **low threshold (10%)** to help verify functionality. In production, increase the threshold as appropriate (e.g. 70%).
+
+
 ### How to Connect
 
 1. Go to the AWS Console → **Systems Manager → Session Manager**.
@@ -117,12 +138,12 @@ Since the EC2 instances are deployed into private subnets with no public IP and 
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 5.96.0 |
 
-
-
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_metric_alarm.ec2_a_cpu_high_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_cloudwatch_metric_alarm.ec2_b_cpu_high_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_eip.nat_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip) | resource |
 | [aws_iam_instance_profile.ssm_profile_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.ssm_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
