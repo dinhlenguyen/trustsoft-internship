@@ -23,6 +23,7 @@ ts-internship/
 │
 ├── providers.tf            # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
 ├── variables.tf            # Input variables for flexible configuration
+├── terraform.tfvars        # Defines environment-specific variable values (email addresses)
 ├── outputs.tf              # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
 ├── vpc_sg.tf               # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
 ├── ec2.tf                  # EC2 Instances creation with different user-data scripts
@@ -65,8 +66,8 @@ Confirm `yes` when prompted.
 - **Application Load Balancer**:
   - Round-robin distribution between the two EC2 instances
 - **CloudWatch Monitoring**:
-  - CPU Utilization alarms for each EC2 instance (triggered if CPU > 10% for 4 minutes)
-  
+  - CPU Utilization alarms for each EC2 instance with **SNS** email notifications to configured subscribers
+
 ## 🛡️ Security Considerations
 - **No SSH (port 22) open** to the internet.
 - **EC2 instances** are private (reachable only through Load Balancer and outbound through NAT Gateway).
@@ -87,11 +88,6 @@ This project uses a **remote backend** to store the Terraform state securely and
 - Encryption at rest is enabled (AES-256 S3 encryption).
 - Versioning is enabled on the S3 bucket to allow recovery of previous state versions.
 
-
-## 🖥️ EC2 Access via Systems Manager Session Manager
-
-Since the EC2 instances are deployed into private subnets with no public IP and no SSH ports open, access is provided securely through **AWS Systems Manager Session Manager**.
-
 ## 📊 CloudWatch Monitoring
 
 This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 instances in private subnets.
@@ -109,9 +105,14 @@ This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 ins
 - **Metric:** `CPUUtilization`
 - **Statistic:** `Average`
 - **Treat missing data:** `notBreaching`
+- **Notification:** SNS topic `alarms-internship-dinh` will send emails to the configured subscribers
+
 
 >  These alarms are configured with a **low threshold (10%)** to help verify functionality. In production, increase the threshold as appropriate (e.g. 70%).
 
+## 🖥️ EC2 Access via Systems Manager Session Manager
+
+Since the EC2 instances are deployed into private subnets with no public IP and no SSH ports open, access is provided securely through **AWS Systems Manager Session Manager**.
 
 ### How to Connect
 
@@ -144,6 +145,10 @@ This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 ins
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 5.96.0 |
 
+## Modules
+
+No modules.
+
 ## Resources
 
 | Name | Type |
@@ -173,6 +178,8 @@ This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 ins
 | [aws_route_table_association.public_b](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association) | resource |
 | [aws_security_group.alb_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.web_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_sns_topic.alarms_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic_subscription.email_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
 | [aws_subnet.private_subnet_a](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.private_subnet_b](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public_subnet_a](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
@@ -188,6 +195,7 @@ This project includes **CloudWatch alarms** to monitor CPU usage of both EC2 ins
 | <a name="input_availability_zone_b"></a> [availability\_zone\_b](#input\_availability\_zone\_b) | Availability Zone for Subnet B | `string` | `"eu-west-1b"` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region to deploy into | `string` | `"eu-west-1"` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | EC2 instance type | `string` | `"t2.micro"` | no |
+| <a name="input_notification_emails"></a> [notification\_emails](#input\_notification\_emails) | List of email addresses to notify for CloudWatch alarms | `list(string)` | `[]` | no |
 | <a name="input_private_subnet_cidr_a"></a> [private\_subnet\_cidr\_a](#input\_private\_subnet\_cidr\_a) | CIDR block for Private Subnet A | `string` | `"10.0.1.0/24"` | no |
 | <a name="input_private_subnet_cidr_b"></a> [private\_subnet\_cidr\_b](#input\_private\_subnet\_cidr\_b) | CIDR block for Private Subnet B | `string` | `"10.0.2.0/24"` | no |
 | <a name="input_public_subnet_cidr_a"></a> [public\_subnet\_cidr\_a](#input\_public\_subnet\_cidr\_a) | CIDR block for Public Subnet A | `string` | `"10.0.101.0/24"` | no |
