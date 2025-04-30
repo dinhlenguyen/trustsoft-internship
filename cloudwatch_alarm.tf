@@ -20,12 +20,12 @@ resource "aws_sns_topic_subscription" "email_internship_dinh" {
 resource "aws_cloudwatch_metric_alarm" "ec2_a_cpu_high_internship_dinh" {
   alarm_name          = "ec2-a-cpu-high-internship-dinh"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 60
+  period              = 120
   statistic           = "Average"
-  threshold           = 2
+  threshold           = 10
 
   alarm_description = "Alarm when EC2-A CPU exceeds 10% for 4 minutes"
   dimensions = {
@@ -46,12 +46,12 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_cpu_high_internship_dinh" {
 resource "aws_cloudwatch_metric_alarm" "ec2_b_cpu_high_internship_dinh" {
   alarm_name          = "ec2-b-cpu-high-internship-dinh"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 60
+  period              = 120
   statistic           = "Average"
-  threshold           = 2
+  threshold           = 10
 
   alarm_description = "Alarm when EC2-B CPU exceeds 10% for 4 minutes"
   dimensions = {
