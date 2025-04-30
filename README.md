@@ -5,9 +5,12 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 - VPC with Public and Private Subnets (across two AZs)
 - Internet Gateway and NAT Gateway
 - Security Groups for ALB and EC2
-- Two EC2 Instances in private subnets (Nginx/Apache installed with different web pages)
+- Two EC2 Instances in private subnets (Nginx installed with different web pages)
 - Application Load Balancer (ALB) distributing traffic to both EC2s
 - Outputs for key resources
+
+## 🖼️ Architecture Diagram
+![](trustsoft-internship-diagram.png)
 
 ---
 
@@ -18,13 +21,14 @@ ts-internship/
 ├── infra-bootstrap/
 │   └── backend_setup.tf      # Create S3 bucket and DynamoDB table for backend
 │
-├── providers.tf      # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
-├── variables.tf      # Input variables for flexible configuration
-├── outputs.tf        # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
-├── vpc_sg.tf         # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
-├── ec2.tf            # EC2 Instances creation with different user-data scripts
-├── alb.tf            # Application Load Balancer setup with target groups and listeners
-├── iam.tf            # IAM Role, Policy Attachment, Instance Profile for SSM
+├── providers.tf            # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
+├── variables.tf            # Input variables for flexible configuration
+├── outputs.tf              # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
+├── vpc_sg.tf               # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
+├── ec2.tf                  # EC2 Instances creation with different user-data scripts
+├── alb.tf                  # Application Load Balancer setup with target groups and listeners
+├── iam.tf                  # IAM Role, Policy Attachment, Instance Profile for SSM
+├── cloudwatch_alarm.tf     # Defines CPU utilization CloudWatch alarms for both EC2 instances
 ```
 
 ## ⚙️ How to Deploy
@@ -60,7 +64,9 @@ Confirm `yes` when prompted.
   - Each instance serves different web content (`Server A`, `Server B`) for testing Load Balancer behavior
 - **Application Load Balancer**:
   - Round-robin distribution between the two EC2 instances
-
+- **CloudWatch Monitoring**:
+  - CPU Utilization alarms for each EC2 instance (triggered if CPU > 10% for 4 minutes)
+  
 ## 🛡️ Security Considerations
 - **No SSH (port 22) open** to the internet.
 - **EC2 instances** are private (reachable only through Load Balancer and outbound through NAT Gateway).
