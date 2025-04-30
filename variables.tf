@@ -115,3 +115,12 @@ variable "user_data_script_b" {
                 echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
                 EOF
 }
+
+########################################
+# SNS settings
+########################################
+variable "notification_emails" {
+  description = "List of email addresses to notify for CloudWatch alarms"
+  type        = list(string)
+  default     = []  
+}
