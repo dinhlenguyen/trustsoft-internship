@@ -57,8 +57,8 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy index_a.html to A" \
             --parameters 'commands=[
-              "aws s3 cp s3://s3-cicd-internship-dinh/index_a.html /var/www/html/index.html",
-              "systemctl restart httpd"
+              "aws s3 cp s3://s3-cicd-internship-dinh/index_a.html /usr/share/nginx/html/index.html",
+              "sudo systemctl restart nginx"
             ]' \
             --timeout-seconds 600
 
@@ -67,8 +67,8 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy index_b.html to B" \
             --parameters 'commands=[
-              "aws s3 cp s3://s3-cicd-internship-dinh/index_b.html /var/www/html/index.html",
-              "systemctl restart httpd"
+              "aws s3 cp s3://s3-cicd-internship-dinh/index_b.html /usr/share/nginx/html/index.html",
+              "sudo systemctl restart nginx"
             ]' \
             --timeout-seconds 600
 
