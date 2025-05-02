@@ -2,7 +2,7 @@
 # IAM Role for EC2 Systems Manager (SSM)
 ########################################
 
-resource "aws_iam_role" "ssm_ec2_internship_dinh" {
+resource "aws_iam_role" "ssm_s3_internship_dinh" {
   name = "ssm-ec2-role-internship-dinh"
 
   assume_role_policy = jsonencode({
@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "ssm_s3_full_access" {
 
 resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
   name = "ssm-ec2-profile-internship-dinh"
-  role = aws_iam_role.ssm_ec2_internship_dinh.name
+  role = aws_iam_role.ssm_s3_internship_dinh.name
 }
 
 
