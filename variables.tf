@@ -99,7 +99,7 @@ variable "user_data_script_a" {
                 yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
-                echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                echo "<h1>Welcome to Server A - Internship Dinh - CICD</h1>" > /usr/share/nginx/html/index.html
                 EOF
 }
 
@@ -112,7 +112,7 @@ variable "user_data_script_b" {
                 yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
-                echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                echo "<h1>Welcome to Server B - Internship Dinh - CICD</h1>" > /usr/share/nginx/html/index.html
                 EOF
 }
 
