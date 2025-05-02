@@ -87,7 +87,7 @@ This project uses a **remote backend** to store the Terraform state securely and
 - A DynamoDB table named `lockfile_internship_dinh` is used to manage state locks and prevent concurrent modifications.
 
 ### Backend Settings
-- Encryption at rest is enabled (AES-256 S3 encryption).
+- Encryption enabled using AWS KMS (SSE-KMS) with a customer-managed key.
 - Versioning is enabled on the S3 bucket to allow recovery of previous state versions.
 
 ## 📊 CloudWatch Monitoring
@@ -187,6 +187,15 @@ No modules.
 | [aws_subnet.public_subnet_a](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public_subnet_b](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_vpc.vpc_internship_dinh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
+
+## Backend Resources
+| Name | Type |
+|------|------|
+| [aws_dynamodb_table.terraform_locks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table) | resource |
+| [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_s3_bucket.terraform_state](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_server_side_encryption_configuration.terraform_state_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_versioning.terraform_state_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 
 ## Inputs
 
