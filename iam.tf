@@ -48,7 +48,7 @@ resource "aws_iam_role_policy_attachment" "ssm_s3_full_access" {
 ########################################
 
 resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
-  name = "ssm-ec2-profile-internship-dinh"
+  name = "ssm-s3-profile-internship-dinh"
   role = aws_iam_role.ssm_s3_internship_dinh.name
 }
 
