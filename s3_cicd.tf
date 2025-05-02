@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "cicd_website" {
-  bucket = "s3-cicd-internship-dinh"
-  force_destroy = true             
+  bucket        = "s3-cicd-internship-dinh"
+  force_destroy = true
 
   tags = {
     Name = "s3_cicd_internship_dinh"
