@@ -8,6 +8,7 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 - Two EC2 Instances in private subnets (Nginx installed with different web pages)
 - Application Load Balancer (ALB) distributing traffic to both EC2s
 - Outputs for key resources
+- CI/CD pipeline for infrastructure and front-end updates
 
 ## 🖼️ Architecture Diagram
 ![Architecture Diagram](./assets/trustsoft-internship-diagram.png)
@@ -18,20 +19,27 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 
 ```plaintext
 ts-internship/
+├── .github/
+│   └── workflows
+│       └── terraform.yaml     # GitHub Actions workflow to deploy HTML via SSM
 ├── assets/
 │   └── trustsoft-internship-diagram.png
+├── cicd/
+│   └── index_a.html           # HTML page deployed to EC2 Instance A
+│   └── index_b.html           # HTML page deployed to EC2 Instance B    
 ├── infra-bootstrap/
-│   └── backend_setup.tf      # Create S3 bucket and DynamoDB table for backend
+│   └── backend_setup.tf       # Create S3 bucket and DynamoDB table for backend
 │
-├── providers.tf            # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
-├── variables.tf            # Input variables for flexible configuration
-├── terraform.tfvars        # Defines environment-specific variable values (email addresses)
-├── outputs.tf              # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
-├── vpc_sg.tf               # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
-├── ec2.tf                  # EC2 Instances creation with different user-data scripts
-├── alb.tf                  # Application Load Balancer setup with target groups and listeners
-├── iam.tf                  # IAM Role, Policy Attachment, Instance Profile for SSM
-└── cloudwatch_alarm.tf     # Defines CPU utilization CloudWatch alarms for both EC2 instances
+├── providers.tf               # AWS provider configuration and Terraform settings + remote backend configuration (S3 + DynamoDB)
+├── variables.tf               # Input variables for flexible configuration
+├── terraform.tfvars           # Defines environment-specific variable values (email addresses)
+├── outputs.tf                 # Exposed resource outputs (VPC ID, Subnet IDs, ALB DNS, etc.)
+├── vpc_sg.tf                  # VPC, Subnets, NAT Gateway, Internet Gateway, Security Groups
+├── ec2.tf                     # EC2 Instances creation with different user-data scripts
+├── alb.tf                     # Application Load Balancer setup with target groups and listeners
+├── iam.tf                     # IAM Role, Policy Attachment, Instance Profile for SSM
+├── s3_cicd.tf                 # Create S3 bucket to store index.html files 
+└── cloudwatch_alarm.tf        # Defines CPU utilization CloudWatch alarms for both EC2 instances
 ```
 
 ## ⚙️ How to Deploy
@@ -69,6 +77,8 @@ Confirm `yes` when prompted.
   - Round-robin distribution between the two EC2 instances
 - **CloudWatch Monitoring**:
   - CPU Utilization alarms for each EC2 instance with **SNS** email notifications to configured subscribers
+- **S3 Bucket:**
+  - Storage for index.html files for front-end updates
 
 ## 🛡️ Security Considerations
 - **No SSH (port 22) open** to the internet.
@@ -122,6 +132,33 @@ Since the EC2 instances are deployed into private subnets with no public IP and 
 2. Click **Start Session**.
 3. Select the EC2 instance you want to connect to.
 4. You get secure shell access directly without needing SSH, keys, or public IPs.
+
+## 🔄 CI/CD Pipeline
+
+The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both infrastructure and front-end updates on pushes to the `cicd` branch:
+
+1. **Trigger**  
+   - Runs automatically whenever you push to the `cicd` branch.
+
+2. **Terraform Lifecycle**  
+   - `terraform init`  
+   - `terraform fmt`  
+   - `terraform validate`  
+   - `terraform plan`  
+   - `terraform apply` (provisions or updates your VPC, EC2s, ALB, S3 backend, etc.)
+
+3. **Upload HTML Artifacts**  
+   - Pushes `cicd/index_a.html` and `cicd/index_b.html` to the S3 bucket `s3-cicd-internship-dinh`.
+
+4. **Deploy to EC2 via SSM**  
+   - **Instance A** (`tag:Name=ec2_web_a_internship_dinh`):  
+     - Downloads `index_a.html` from S3  
+     - Overwrites `/usr/share/nginx/html/index.html`  
+     - Restarts the Nginx service  
+   - **Instance B** (`tag:Name=ec2_web_b_internship_dinh`):  
+     - Downloads `index_b.html` from S3  
+     - Overwrites `/usr/share/nginx/html/index.html`  
+     - Restarts the Nginx service  
 
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
