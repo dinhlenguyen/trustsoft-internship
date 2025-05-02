@@ -2,8 +2,8 @@
 # IAM Role for EC2 Systems Manager (SSM)
 ########################################
 
-resource "aws_iam_role" "ssm_internship_dinh" {
-  name = "ssm-role-internship-dinh"
+resource "aws_iam_role" "ssm_ec2_internship_dinh" {
+  name = "ssm-ec2-role-internship-dinh"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -19,7 +19,7 @@ resource "aws_iam_role" "ssm_internship_dinh" {
   })
 
   tags = {
-    Name = "ssm-role-internship-dinh"
+    Name = "ssm-ec2-role-internship-dinh"
   }
 }
 
@@ -34,11 +34,22 @@ resource "aws_iam_role_policy_attachment" "ssm_attach_internship_dinh" {
 }
 
 ########################################
+# Attach S3 Full Access Managed Policy
+########################################
+
+resource "aws_iam_role_policy_attachment" "ssm_s3_full_access" {
+  role       = aws_iam_role.ssm_internship_dinh.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+########################################
 # IAM Instance Profile
 # Needed to attach IAM Role to EC2 Instances
 ########################################
 
 resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
-  name = "ssm-profile-internship-dinh"
-  role = aws_iam_role.ssm_internship_dinh.name
+  name = "ssm-ec2-profile-internship-dinh"
+  role = aws_iam_role.ssm_ec2-internship_dinh.name
 }
+
+
