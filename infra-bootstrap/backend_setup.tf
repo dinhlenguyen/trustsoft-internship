@@ -1,5 +1,20 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.45"
+    }
+  }
+
+  required_version = ">= 1.3.0"
+}
+
+provider "aws" {
+  region = "eu-west-1"
+}
+
 ########################################
-# S3 Bucket for Terraform State Backend
+# S3 Bucket for Terraform State Backend + KMS encryption
 ########################################
 
 resource "aws_s3_bucket" "terraform_state" {
@@ -16,12 +31,23 @@ resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
   }
 }
 
+resource "aws_kms_key" "this" {
+  description             = "Description for the KMS key used to encrypt Terraform state"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+
+  tags = {
+    Name = "statekey_internship_dinh"
+  }
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_encryption" {
   bucket = aws_s3_bucket.terraform_state.id
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.this.arn
     }
   }
 }
