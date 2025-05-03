@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - cicd
+      - s3‑upload-form
 
 env:
   AWS_REGION: eu-west-1
@@ -51,13 +52,15 @@ jobs:
         run: |
           aws s3 cp ./cicd/index_a.html s3://s3-cicd-internship-dinh/index_a.html
           aws s3 cp ./cicd/index_b.html s3://s3-cicd-internship-dinh/index_b.html
+          aws s3 cp ./cicd/app.js        s3://s3-cicd-internship-dinh/app.js
 
           aws ssm send-command \
             --targets "Key=tag:Name,Values=ec2_web_a_internship_dinh" \
             --document-name "AWS-RunShellScript" \
-            --comment "Deploy index_a.html to A" \
+            --comment "Deploy index_a.html and app.js to A" \
             --parameters 'commands=[
               "aws s3 cp s3://s3-cicd-internship-dinh/index_a.html /usr/share/nginx/html/index.html",
+              "aws s3 cp s3://s3-cicd-internship-dinh/app.js /usr/share/nginx/html/app.js",
               "sudo systemctl restart nginx"
             ]' \
             --timeout-seconds 600
@@ -65,10 +68,10 @@ jobs:
           aws ssm send-command \
             --targets "Key=tag:Name,Values=ec2_web_b_internship_dinh" \
             --document-name "AWS-RunShellScript" \
-            --comment "Deploy index_b.html to B" \
+            --comment "Deploy index_b.html and app.js to B" \
             --parameters 'commands=[
               "aws s3 cp s3://s3-cicd-internship-dinh/index_b.html /usr/share/nginx/html/index.html",
+              "aws s3 cp s3://s3-cicd-internship-dinh/app.js /usr/share/nginx/html/app.js",
               "sudo systemctl restart nginx"
             ]' \
             --timeout-seconds 600
-
