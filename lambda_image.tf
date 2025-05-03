@@ -3,6 +3,11 @@
 ########################################
 resource "aws_s3_bucket" "transformed_images" {
   bucket = "s3-lambda-internship-dinh"
+  force_destroy = true
+
+  tags = {
+    Name = "s3_lambda_internship_dinh"
+  }
 }
 
 ########################################
@@ -79,7 +84,7 @@ resource "aws_lambda_function" "grayscale_image_processor" {
   runtime       = "python3.9"
   filename      = "${path.module}/lambda-grayscale/packaged/lambda_function.zip"
   timeout       = 10
-  
+
   environment {
     variables = {
       TARGET_BUCKET = "s3-lambda-internship-dinh"
