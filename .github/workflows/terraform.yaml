@@ -45,7 +45,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/cicd || github.ref == 'refs/heads/s3-upload-form'
+        if: (github.ref == 'refs/heads/cicd') || (github.ref == 'refs/heads/s3-upload-form')
         run: terraform apply -auto-approve tfplan
 
       - name: Deploy per-instance HTML via SSM
