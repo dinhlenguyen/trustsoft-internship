@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - cicd
-      - s3‑upload-form
+      - s3-upload-form
 
 env:
   AWS_REGION: eu-west-1
