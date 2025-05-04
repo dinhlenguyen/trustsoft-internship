@@ -21,6 +21,10 @@ resource "aws_s3_bucket_public_access_block" "transformed_block" {
 resource "aws_s3_bucket_policy" "allow_public_read" {
   bucket = aws_s3_bucket.transformed_images.id
 
+  depends_on = [
+    aws_s3_bucket_public_access_block.transformed_block
+  ]
+
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
