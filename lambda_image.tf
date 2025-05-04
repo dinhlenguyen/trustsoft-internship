@@ -53,7 +53,7 @@ data "archive_file" "function_package" {
 ########################################
 
 resource "aws_lambda_layer_version" "pillow_layer" {
-  filename            = "${path.module}/lambda-grayscale/packaged/pil.zip"
+  filename            = "${path.module}/lambda-grayscale/packaged/layer.zip"
   layer_name          = "grayscale_internship_dinh"
   compatible_runtimes = ["python3.9"]
 }
