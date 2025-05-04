@@ -11,3 +11,6 @@ crash.log
 # Exclude CLI configuration files
 .terraformrc
 terraform.rc
+
+# Variable definition files (sensitive)
+terraform.tfvars
