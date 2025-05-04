@@ -46,7 +46,7 @@ jobs:
 
       - name: Terraform Apply
         if: (github.ref == 'refs/heads/cicd') || (github.ref == 'refs/heads/s3-upload-form')
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan -var="db_password=${{ secrets.DB_PASSWORD }}"
 
       - name: Deploy per-instance HTML via SSM
         run: |
