@@ -42,7 +42,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -var="db_password=${{ secrets.DB_PASSWORD }}"
 
       - name: Terraform Apply
         if: (github.ref == 'refs/heads/cicd') || (github.ref == 'refs/heads/s3-upload-form')
