@@ -12,8 +12,11 @@ document.getElementById('upload-form').addEventListener('submit', (event) => {
 
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
-    if (!file) {
-        alert('Please select a file to upload.');
+    const name = document.getElementById('name-input').value.trim();
+    const surname = document.getElementById('surname-input').value.trim();
+
+    if (!file || !name || !surname) {
+        alert('Please fill in all fields and select a file.');
         return;
     }
 
@@ -21,7 +24,11 @@ document.getElementById('upload-form').addEventListener('submit', (event) => {
     const params = {
         Bucket: 's3-upload-form-internship-dinh',
         Key: key,
-        Body: file
+        Body: file,
+        Metadata: {
+            name: name.toLowerCase(),
+            surname: surname.toLowerCase()
+        }
     };
 
     s3.putObject(params, (err, data) => {
