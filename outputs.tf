@@ -5,7 +5,7 @@ output "alb_dns_name" {
 
 output "identity_pool_id" {
   description = "Cognito identity ID"
-  value = aws_cognito_identity_pool.cognito_internship_dinh.id
+  value       = aws_cognito_identity_pool.cognito_internship_dinh.id
 }
 
 output "rds_endpoint" {

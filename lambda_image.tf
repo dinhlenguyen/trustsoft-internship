@@ -117,8 +117,8 @@ resource "aws_iam_role_policy" "lambda_image_policy" {
         Resource = "arn:aws:s3:::s3-lambda-internship-dinh/*"
       },
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "ec2:CreateNetworkInterface",
           "ec2:DescribeNetworkInterfaces",
           "ec2:DeleteNetworkInterface"

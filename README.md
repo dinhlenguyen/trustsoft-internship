@@ -162,6 +162,23 @@ The sequence diagram illustrates the interaction between services:
 
 ---
 
+## 🔐 Accessing the RDS Database
+
+To securely access the RDS MySQL database, you must use **AWS Systems Manager (SSM)** to tunnel into the private EC2 environment.
+
+### Security considerations
+- RDS **allows** inbound MySQL traffic (port 3306) from EC2's security group
+- EC2 instances **don't allow** SSH connection (port 22), use SSM to connect 
+
+### Instructions
+
+1. Start a session with EC2 using SSM (e.g. via AWS Console)
+2. run `mysql -h your-rds-endpoint -u admin -p grayscaledb`, your `your-rds-endpoint` is one of the outputs
+3. enter `db_password` when prompted
+4. run `SELECT * FROM uploads;` to query 
+
+---
+
 ## 🖼️ Example Output
 
 Below is an example of a successfully uploaded and processed grayscale image. The user enters their name, selects an image, and submits it. The image is converted to grayscale by a Lambda function and displayed directly on the page.
