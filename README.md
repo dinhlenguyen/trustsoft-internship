@@ -162,6 +162,10 @@ The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both 
 
 **Note:** Ensure AWS credentials are configured as GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and optionally `AWS_SESSION_TOKEN`) so the workflow can authenticate and perform AWS operations.  
 
+<p align="center">
+  <img src="./assets/trustsoft-internship-diagram-2.png" alt="CICD pipeline" width="95%" />
+</p>
+
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
