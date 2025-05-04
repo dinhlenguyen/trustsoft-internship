@@ -59,6 +59,26 @@ resource "aws_lambda_layer_version" "pillow_layer" {
 }
 
 ########################################
+# Lambda security group
+########################################
+resource "aws_security_group" "lambda_internship_dinh" {
+  name        = "sg_lambda_internship_dinh"
+  description = "Allow Lambda to access RDS"
+  vpc_id      = aws_vpc.vpc_internship_dinh.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "sg_lambda_internship_dinh"
+  }
+}
+
+########################################
 # Lambda Role
 ########################################
 
@@ -124,6 +144,11 @@ resource "aws_lambda_function" "grayscale_image_processor" {
     }
   }
 
+  vpc_config {
+    subnet_ids         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
+    security_group_ids = [aws_security_group.lambda_internship_dinh.id]
+  }
+  
   layers = [
     aws_lambda_layer_version.pillow_layer.arn
   ]
