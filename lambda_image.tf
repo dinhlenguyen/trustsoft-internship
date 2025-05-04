@@ -40,7 +40,7 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
 }
 
 ########################################
-# Data source to generate an archive from file
+# Data source to generate Lambda zip
 ########################################
 data "archive_file" "function_package" {
   type        = "zip"
@@ -49,9 +49,8 @@ data "archive_file" "function_package" {
 }
 
 ########################################
-# Lambda Layer for Pillow (built manually)
+# Lambda Layer for Pillow (manual)
 ########################################
-
 resource "aws_lambda_layer_version" "pillow_layer" {
   filename            = "${path.module}/lambda-grayscale/packaged/layer.zip"
   layer_name          = "grayscale_internship_dinh"
@@ -59,7 +58,7 @@ resource "aws_lambda_layer_version" "pillow_layer" {
 }
 
 ########################################
-# Lambda security group
+# Lambda Security Group
 ########################################
 resource "aws_security_group" "lambda_internship_dinh" {
   name        = "sg_lambda_internship_dinh"
@@ -79,9 +78,8 @@ resource "aws_security_group" "lambda_internship_dinh" {
 }
 
 ########################################
-# Lambda Role
+# Lambda IAM Role and Policy
 ########################################
-
 resource "aws_iam_role" "lambda_image_role" {
   name = "lambda_internship_dinh"
 
@@ -117,22 +115,30 @@ resource "aws_iam_role_policy" "lambda_image_policy" {
         Effect   = "Allow",
         Action   = ["s3:PutObject"],
         Resource = "arn:aws:s3:::s3-lambda-internship-dinh/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface"
+        ],
+        Resource = "*"
       }
     ]
   })
 }
 
 ########################################
-# Lambda Function (Grayscale Converter)
+# Lambda Function (Grayscale + DB Insert)
 ########################################
-
 resource "aws_lambda_function" "grayscale_image_processor" {
   function_name = "grayscale-image-converter"
   role          = aws_iam_role.lambda_image_role.arn
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
   filename      = "${path.module}/lambda-grayscale/packaged/lambda_function.zip"
-  timeout       = 10
+  timeout       = 30
 
   environment {
     variables = {
@@ -148,18 +154,19 @@ resource "aws_lambda_function" "grayscale_image_processor" {
     subnet_ids         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
     security_group_ids = [aws_security_group.lambda_internship_dinh.id]
   }
-  
+
   layers = [
     aws_lambda_layer_version.pillow_layer.arn
   ]
 
-  depends_on = [aws_iam_role_policy.lambda_image_policy]
+  depends_on = [
+    aws_iam_role_policy.lambda_image_policy
+  ]
 }
 
 ########################################
-# S3 Trigger: Process images on upload
+# S3 Trigger for Lambda
 ########################################
-
 resource "aws_lambda_permission" "allow_s3_trigger" {
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
