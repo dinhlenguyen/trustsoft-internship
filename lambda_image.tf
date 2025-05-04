@@ -10,6 +10,23 @@ resource "aws_s3_bucket" "transformed_images" {
   }
 }
 
+resource "aws_s3_bucket_policy" "allow_public_read" {
+  bucket = aws_s3_bucket.transformed_images.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "PublicRead",
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = ["s3:GetObject"],
+        Resource  = "arn:aws:s3:::s3-lambda-internship-dinh/*"
+      }
+    ]
+  })
+}
+
 ########################################
 # Data source to generate an archive from file
 ########################################

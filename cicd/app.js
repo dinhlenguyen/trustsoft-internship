@@ -25,12 +25,38 @@ document.getElementById('upload-form').addEventListener('submit', (event) => {
     };
 
     s3.putObject(params, (err, data) => {
+        const resultDiv = document.getElementById('result');
+
         if (err) {
             console.error('Error uploading file:', err);
             alert('An error occurred while uploading the file.');
-        } else {
-            console.log('File uploaded successfully:', data);
-            alert('File uploaded successfully!');
+            return;
         }
+
+        console.log('File uploaded successfully:', data);
+        alert('File uploaded successfully! Processing...');
+
+        const grayscaleKey = `grayscale-${file.name}`;
+        const imageUrl = `https://s3-lambda-internship-dinh.s3.amazonaws.com/${grayscaleKey}`;
+
+        resultDiv.innerHTML = '<p class="text-muted">Waiting for image to be processed...</p>';
+
+        // Wait before trying to load the image
+        setTimeout(() => {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'Grayscale image';
+            img.classList.add('img-fluid', 'rounded', 'shadow');
+            img.style.maxWidth = '300px';
+
+            img.onload = () => {
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(img);
+            };
+
+            img.onerror = () => {
+                resultDiv.innerHTML = '<p class="text-danger">Image is still processing or failed to load. Please try again shortly.</p>';
+            };
+        }, 2500);
     });
 });
