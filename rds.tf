@@ -13,6 +13,14 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = aws_vpc.vpc_internship_dinh.id
 
   ingress {
+    description     = "MySQL from EC2"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_internship_dinh.id]
+    }
+
+  ingress {
     description     = "MySQL"
     from_port       = 3306
     to_port         = 3306
