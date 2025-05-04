@@ -117,7 +117,7 @@ resource "aws_lambda_function" "grayscale_image_processor" {
   environment {
     variables = {
       TARGET_BUCKET = "s3-lambda-internship-dinh"
-      DB_HOST       = "grayscale-metadata-db.choq86uu2zhq.eu-west-1.rds.amazonaws.com:3306"
+      DB_HOST       = "grayscale-metadata-db.choq86uu2zhq.eu-west-1.rds.amazonaws.com"
       DB_USER       = "admin"
       DB_PASS       = var.db_password
       DB_NAME       = "grayscaledb"
