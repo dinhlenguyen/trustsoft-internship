@@ -2,7 +2,7 @@
 # S3 bucket for transformed images
 ########################################
 resource "aws_s3_bucket" "transformed_images" {
-  bucket = "s3-lambda-internship-dinh"
+  bucket        = "s3-lambda-internship-dinh"
   force_destroy = true
 
   tags = {
