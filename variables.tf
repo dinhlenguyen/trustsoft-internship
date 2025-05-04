@@ -122,5 +122,13 @@ variable "user_data_script_b" {
 variable "notification_emails" {
   description = "List of email addresses to notify for CloudWatch alarms"
   type        = list(string)
-  default     = []
+  default     = ["lend03@vse.cz"]
+}
+
+########################################
+# RDS settings
+########################################
+variable "db_password" {
+  type      = string
+  sensitive = true
 }
