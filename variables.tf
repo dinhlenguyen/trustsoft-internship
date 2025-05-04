@@ -96,6 +96,7 @@ variable "user_data_script_a" {
   default     = <<-EOF
                 #!/bin/bash
                 yum update -y
+                yum install -y mariadb
                 yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
@@ -109,6 +110,7 @@ variable "user_data_script_b" {
   default     = <<-EOF
                 #!/bin/bash
                 yum update -y
+                yum install -y mariadb
                 yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
