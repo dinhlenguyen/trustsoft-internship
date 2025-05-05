@@ -64,15 +64,27 @@ resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
 ########################################
 # SSM Document: CloudWatch Agent Config
 ########################################
-data "aws_ssm_document" "cwagent_document" {
-  name = "AmazonCloudWatch-ManageAgent"
+resource "aws_ssm_document" "cw_agent_update" {
+  name            = "Linux-UpdateCloudWatchAgent-internship-dinh"
+  document_type   = "Command"
+  document_format = "YAML"
+  content = <<DOC
+schemaVersion: '2.2'
+description: 'Update CloudWatch agent to latest version'
+mainSteps:
+  - action: aws:configurePackage
+    name: updateCWAgent
+    inputs:
+      name: AmazonCloudWatchAgent
+      action: Install
+DOC
 }
 
 ########################################
 # SSM Parameter
 ########################################
 resource "aws_ssm_parameter" "cwagent_config" {
-  name        = "AmazonCloudWatch-linux"
+  name        = "AmazonCloudWatch-linux-internship-dinh"
   type        = "String"
   description = "CloudWatch Agent configuration for EC2 instances"
   overwrite   = true
@@ -118,13 +130,11 @@ resource "aws_ssm_association" "install_cwagent_b" {
   depends_on = [aws_instance.web_b_internship_dinh]
 }
 
-
 ########################################
 # SSM Association for EC2 Instance A
 ########################################
-
 resource "aws_ssm_association" "cwagent_association_a" {
-  name             = data.aws_ssm_document.cwagent_document.name
+  name             = aws_ssm_document.cw_agent_update.name
   association_name = "cwagent-ec2a-association"
 
   targets {
@@ -133,11 +143,8 @@ resource "aws_ssm_association" "cwagent_association_a" {
   }
 
   parameters = {
-    action                        = "configure"
-    mode                          = "ec2"
-    optionalConfigurationSource   = "ssm"
-    optionalConfigurationLocation = "AmazonCloudWatch-linux"
-    optionalRestart               = "yes"
+    config = "{\"agent\":{\"metrics_collection_interval\":60,\"run_as_user\":\"root\"},\"metrics\":{\"namespace\":\"Dinh\",\"metrics_collected\":{\"cpu\":{\"measurement\":[\"cpu_usage_idle\",\"cpu_usage_user\",\"cpu_usage_system\"],\"metrics_collection_interval\":60,\"totalcpu\":true},\"disk\":{\"measurement\":[\"used_percent\"],\"metrics_collection_interval\":60,\"resources\":[\"/\"],\"ignore_file_system_types\":[\"tmpfs\",\"devtmpfs\"]},\"mem\":{\"measurement\":[\"mem_used_percent\"],\"metrics_collection_interval\":60}}}}"
+
   }
 
   depends_on = [
@@ -153,7 +160,7 @@ resource "aws_ssm_association" "cwagent_association_a" {
 ########################################
 
 resource "aws_ssm_association" "cwagent_association_b" {
-  name             = data.aws_ssm_document.cwagent_document.name
+  name             = aws_ssm_document.cw_agent_update.name
   association_name = "cwagent-ec2b-association"
 
   targets {
@@ -162,11 +169,8 @@ resource "aws_ssm_association" "cwagent_association_b" {
   }
 
   parameters = {
-    action                        = "configure"
-    mode                          = "ec2"
-    optionalConfigurationSource   = "ssm"
-    optionalConfigurationLocation = "AmazonCloudWatch-linux"
-    optionalRestart               = "yes"
+    config = "{\"agent\":{\"metrics_collection_interval\":60,\"run_as_user\":\"root\"},\"metrics\":{\"namespace\":\"Dinh\",\"metrics_collected\":{\"cpu\":{\"measurement\":[\"cpu_usage_idle\",\"cpu_usage_user\",\"cpu_usage_system\"],\"metrics_collection_interval\":60,\"totalcpu\":true},\"disk\":{\"measurement\":[\"used_percent\"],\"metrics_collection_interval\":60,\"resources\":[\"/\"],\"ignore_file_system_types\":[\"tmpfs\",\"devtmpfs\"]},\"mem\":{\"measurement\":[\"mem_used_percent\"],\"metrics_collection_interval\":60}}}}"
+
   }
 
   depends_on = [
@@ -175,4 +179,3 @@ resource "aws_ssm_association" "cwagent_association_b" {
     aws_instance.web_b_internship_dinh
   ]
 }
-
