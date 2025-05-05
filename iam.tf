@@ -61,13 +61,45 @@ resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
   role = aws_iam_role.ssm_s3_internship_dinh.name
 }
 
-########################################
-# SSM Document: CloudWatch Agent Config
-########################################
+resource "aws_ssm_document" "cw_agent_install" {
+  name            = "Linux-InstallCloudWatchAgent-internship-dinh"
+  document_type   = "Command"
+  document_format = "YAML"
+
+  content = <<DOC
+schemaVersion: '2.2'
+description: 'Install and configure CloudWatch agent'
+parameters:
+  action:
+    type: String
+    description: "(Required) Specify whether or not to install or uninstall CloudWatch agent"
+    allowedValues:
+      - Install
+    default: Install
+  configurationLocation:
+    type: String
+    description: "SSM Parameter Store location containing the CloudWatch agent configuration"
+    default: "${aws_ssm_parameter.cw_agent_config.name}"
+mainSteps:
+  - action: aws:configurePackage
+    name: installCWAgent
+    inputs:
+      name: AmazonCloudWatchAgent
+      action: "{{ action }}"
+  - action: aws:runShellScript
+    name: configureAgent
+    inputs:
+      runCommand:
+        - |
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:{{ configurationLocation }} -s
+DOC
+}
+
 resource "aws_ssm_document" "cw_agent_update" {
   name            = "Linux-UpdateCloudWatchAgent-internship-dinh"
   document_type   = "Command"
   document_format = "YAML"
+
   content = <<DOC
 schemaVersion: '2.2'
 description: 'Update CloudWatch agent to latest version'
@@ -80,26 +112,38 @@ mainSteps:
 DOC
 }
 
-########################################
-# SSM Parameter
-########################################
-resource "aws_ssm_parameter" "cwagent_config" {
-  name        = "AmazonCloudWatch-linux-internship-dinh"
-  type        = "String"
-  description = "CloudWatch Agent configuration for EC2 instances"
-  overwrite   = true
-  tier        = "Standard"
-  value       = file("${path.module}/cwagent-config.json")
-
-  tags = {
-    Name = "cwagent-config"
-  }
+resource "aws_ssm_parameter" "cw_agent_config" {
+  name  = "Cloudwatch-agent-internship-dinh"
+  type  = "String"
+  overwrite = true  # Optional, useful if parameter already exists
+  value = jsonencode({
+    agent = {
+      metrics_collection_interval = 300
+      run_as_user                = "root"
+    }
+    metrics = {
+      namespace         = "Dinh"
+      append_dimensions = {
+        InstanceId = "$${aws:InstanceId}"
+      }
+      metrics_collected = {
+        mem = {
+          measurement                = ["mem_used_percent"]
+          metrics_collection_interval = 5
+        }
+        disk = {
+          measurement                = ["disk_used_percent"]
+          metrics_collection_interval = 5
+          resources                  = ["/"]
+          ignore_file_system_types   = ["tmpfs", "devtmpfs"]
+        }
+      }
+    }
+  })
 }
-########################################
-# SSM Association to install the agent
-########################################
-resource "aws_ssm_association" "install_cwagent_a" {
-  name = "AWS-ConfigureAWSPackage"
+
+resource "aws_ssm_association" "manage_cloudwatch_agent_a" {
+  name = aws_ssm_document.cw_agent_install.name
 
   targets {
     key    = "InstanceIds"
@@ -107,61 +151,18 @@ resource "aws_ssm_association" "install_cwagent_a" {
   }
 
   parameters = {
-    action = "Install"
-    name   = "AmazonCloudWatchAgent"
-  }
-
-  depends_on = [aws_instance.web_a_internship_dinh]
-}
-
-resource "aws_ssm_association" "install_cwagent_b" {
-  name = "AWS-ConfigureAWSPackage"
-
-  targets {
-    key    = "InstanceIds"
-    values = [aws_instance.web_b_internship_dinh.id]
-  }
-
-  parameters = {
-    action = "Install"
-    name   = "AmazonCloudWatchAgent"
-  }
-
-  depends_on = [aws_instance.web_b_internship_dinh]
-}
-
-########################################
-# SSM Association for EC2 Instance A
-########################################
-resource "aws_ssm_association" "cwagent_association_a" {
-  name             = aws_ssm_document.cw_agent_update.name
-  association_name = "cwagent-ec2a-association"
-
-  targets {
-    key    = "InstanceIds"
-    values = [aws_instance.web_a_internship_dinh.id]
-  }
-
-  parameters = {
-    config = "{\"agent\":{\"metrics_collection_interval\":60,\"run_as_user\":\"root\"},\"metrics\":{\"namespace\":\"Dinh\",\"metrics_collected\":{\"cpu\":{\"measurement\":[\"cpu_usage_idle\",\"cpu_usage_user\",\"cpu_usage_system\"],\"metrics_collection_interval\":60,\"totalcpu\":true},\"disk\":{\"measurement\":[\"used_percent\"],\"metrics_collection_interval\":60,\"resources\":[\"/\"],\"ignore_file_system_types\":[\"tmpfs\",\"devtmpfs\"]},\"mem\":{\"measurement\":[\"mem_used_percent\"],\"metrics_collection_interval\":60}}}}"
-
+    action                = "Install"
+    configurationLocation = aws_ssm_parameter.cw_agent_config.name
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.cloudwatch_agent_attach,
-    aws_ssm_parameter.cwagent_config,
+    aws_ssm_document.cw_agent_install,
     aws_instance.web_a_internship_dinh
   ]
 }
 
-
-########################################
-# SSM Association for EC2 Instance B
-########################################
-
-resource "aws_ssm_association" "cwagent_association_b" {
-  name             = aws_ssm_document.cw_agent_update.name
-  association_name = "cwagent-ec2b-association"
+resource "aws_ssm_association" "manage_cloudwatch_agent_b" {
+  name = aws_ssm_document.cw_agent_install.name
 
   targets {
     key    = "InstanceIds"
@@ -169,13 +170,42 @@ resource "aws_ssm_association" "cwagent_association_b" {
   }
 
   parameters = {
-    config = "{\"agent\":{\"metrics_collection_interval\":60,\"run_as_user\":\"root\"},\"metrics\":{\"namespace\":\"Dinh\",\"metrics_collected\":{\"cpu\":{\"measurement\":[\"cpu_usage_idle\",\"cpu_usage_user\",\"cpu_usage_system\"],\"metrics_collection_interval\":60,\"totalcpu\":true},\"disk\":{\"measurement\":[\"used_percent\"],\"metrics_collection_interval\":60,\"resources\":[\"/\"],\"ignore_file_system_types\":[\"tmpfs\",\"devtmpfs\"]},\"mem\":{\"measurement\":[\"mem_used_percent\"],\"metrics_collection_interval\":60}}}}"
-
+    action                = "Install"
+    configurationLocation = aws_ssm_parameter.cw_agent_config.name
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.cloudwatch_agent_attach,
-    aws_ssm_parameter.cwagent_config,
+    aws_ssm_document.cw_agent_install,
     aws_instance.web_b_internship_dinh
+  ]
+}
+
+resource "aws_ssm_association" "update_cloudwatch_agent_a" {
+  name = aws_ssm_document.cw_agent_update.name
+
+  targets {
+    key    = "InstanceIds"
+    values = [aws_instance.web_a_internship_dinh.id]
+  }
+
+  depends_on = [
+    aws_ssm_document.cw_agent_update,
+    aws_instance.web_a_internship_dinh,
+    aws_ssm_association.manage_cloudwatch_agent_a
+  ]
+}
+
+resource "aws_ssm_association" "update_cloudwatch_agent_b" {
+  name = aws_ssm_document.cw_agent_update.name
+
+  targets {
+    key    = "InstanceIds"
+    values = [aws_instance.web_b_internship_dinh.id]
+  }
+
+  depends_on = [
+    aws_ssm_document.cw_agent_update,
+    aws_instance.web_b_internship_dinh,
+    aws_ssm_association.manage_cloudwatch_agent_b
   ]
 }
