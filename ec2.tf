@@ -12,7 +12,8 @@ resource "aws_instance" "web_a_internship_dinh" {
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile_internship_dinh.name
 
   tags = {
-    Name = "ec2_web_a_internship_dinh"
+    Name        = "ec2_web_a_internship_dinh"
+    Environment = "Dev"
   }
 
   user_data = var.user_data_script_a
@@ -28,7 +29,8 @@ resource "aws_instance" "web_b_internship_dinh" {
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile_internship_dinh.name
 
   tags = {
-    Name = "ec2_web_b_internship_dinh"
+    Name        = "ec2_web_b_internship_dinh"
+    Environment = "Dev"
   }
 
   user_data = var.user_data_script_b
