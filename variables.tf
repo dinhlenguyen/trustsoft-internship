@@ -100,8 +100,6 @@ variable "user_data_script_a" {
                 systemctl start nginx
                 systemctl enable nginx
                 echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-
-                # Create CloudWatch config file
                 cat << EOC > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
                 {
                   "agent": {
@@ -110,10 +108,10 @@ variable "user_data_script_a" {
                   },
                   "metrics": {
                     "append_dimensions": {
-                      "AutoScalingGroupName": "\${aws:AutoScalingGroupName}",
-                      "ImageId": "\${aws:ImageId}",
-                      "InstanceId": "\${aws:InstanceId}",
-                      "InstanceType": "\${aws:InstanceType}"
+                      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
+                      "ImageId": "$${aws:ImageId}",
+                      "InstanceId": "$${aws:InstanceId}",
+                      "InstanceType": "$${aws:InstanceType}"
                     },
                     "metrics_collected": {
                       "cpu": {
@@ -138,8 +136,6 @@ variable "user_data_script_a" {
                   }
                 }
                 EOC
-
-                # Start CloudWatch Agent
                 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
                   -a fetch-config \
                   -m ec2 \
@@ -158,8 +154,6 @@ variable "user_data_script_b" {
                 systemctl start nginx
                 systemctl enable nginx
                 echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-
-                # Create CloudWatch config file
                 cat << EOC > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
                 {
                   "agent": {
@@ -168,10 +162,10 @@ variable "user_data_script_b" {
                   },
                   "metrics": {
                     "append_dimensions": {
-                      "AutoScalingGroupName": "\${aws:AutoScalingGroupName}",
-                      "ImageId": "\${aws:ImageId}",
-                      "InstanceId": "\${aws:InstanceId}",
-                      "InstanceType": "\${aws:InstanceType}"
+                      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
+                      "ImageId": "$${aws:ImageId}",
+                      "InstanceId": "$${aws:InstanceId}",
+                      "InstanceType": "$${aws:InstanceType}"
                     },
                     "metrics_collected": {
                       "cpu": {
@@ -196,8 +190,6 @@ variable "user_data_script_b" {
                   }
                 }
                 EOC
-
-                # Start CloudWatch Agent
                 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
                   -a fetch-config \
                   -m ec2 \
