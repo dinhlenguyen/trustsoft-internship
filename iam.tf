@@ -64,7 +64,6 @@ resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
 ########################################
 # SSM Document: CloudWatch Agent Config
 ########################################
-
 data "aws_ssm_document" "cwagent_document" {
   name = "AmazonCloudWatch-ManageAgent"
 }
@@ -84,6 +83,41 @@ resource "aws_ssm_parameter" "cwagent_config" {
     Name = "cwagent-config"
   }
 }
+########################################
+# SSM Association to install the agent
+########################################
+resource "aws_ssm_association" "install_cwagent_a" {
+  name = "AWS-ConfigureAWSPackage"
+
+  targets {
+    key    = "InstanceIds"
+    values = [aws_instance.web_a_internship_dinh.id]
+  }
+
+  parameters = {
+    action = "Install"
+    name   = "AmazonCloudWatchAgent"
+  }
+
+  depends_on = [aws_instance.web_a_internship_dinh]
+}
+
+resource "aws_ssm_association" "install_cwagent_b" {
+  name = "AWS-ConfigureAWSPackage"
+
+  targets {
+    key    = "InstanceIds"
+    values = [aws_instance.web_b_internship_dinh.id]
+  }
+
+  parameters = {
+    action = "Install"
+    name   = "AmazonCloudWatchAgent"
+  }
+
+  depends_on = [aws_instance.web_b_internship_dinh]
+}
+
 
 ########################################
 # SSM Association for EC2 Instance A
@@ -91,7 +125,7 @@ resource "aws_ssm_parameter" "cwagent_config" {
 
 resource "aws_ssm_association" "cwagent_association_a" {
   name             = data.aws_ssm_document.cwagent_document.name
-  association_name = "cwagent-ec2b-association"
+  association_name = "cwagent-ec2a-association"
 
   targets {
     key    = "InstanceIds"
@@ -108,8 +142,8 @@ resource "aws_ssm_association" "cwagent_association_a" {
 
   depends_on = [
     aws_iam_role_policy_attachment.cloudwatch_agent_attach,
-    aws_instance.web_a_internship_dinh,
-    aws_ssm_parameter.cwagent_config
+    aws_ssm_parameter.cwagent_config,
+    aws_instance.web_a_internship_dinh
   ]
 }
 
@@ -137,8 +171,8 @@ resource "aws_ssm_association" "cwagent_association_b" {
 
   depends_on = [
     aws_iam_role_policy_attachment.cloudwatch_agent_attach,
-    aws_instance.web_b_internship_dinh,
-    aws_ssm_parameter.cwagent_config
+    aws_ssm_parameter.cwagent_config,
+    aws_instance.web_b_internship_dinh
   ]
 }
 
