@@ -1,7 +1,7 @@
 // Configure the AWS SDK
 AWS.config.region = 'eu-west-1';
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: 'eu-west-1:9faa00fb-7904-4810-a92f-1638bb0238e4'
+    IdentityPoolId: 'eu-west-1:1cb7be43-0032-4bce-a30b-04f94c5dc49f'
 });
 
 // Create an S3 client
