@@ -43,6 +43,15 @@ resource "aws_iam_role_policy_attachment" "ssm_s3_full_access" {
 }
 
 ########################################
+# Attach CloudWatch Agent Server Policy
+########################################
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent_attach" {
+  role       = aws_iam_role.ssm_s3_internship_dinh.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+########################################
 # IAM Instance Profile
 # Needed to attach IAM Role to EC2 Instances
 ########################################
@@ -51,5 +60,3 @@ resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
   name = "ssm-s3-profile-internship-dinh"
   role = aws_iam_role.ssm_s3_internship_dinh.name
 }
-
-
