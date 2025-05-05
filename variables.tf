@@ -96,51 +96,11 @@ variable "user_data_script_a" {
   default     = <<-EOF
                 #!/bin/bash
                 yum update -y
-                yum install -y mariadb amazon-cloudwatch-agent nginx
+                sudo dnf install -y mariadb105
+                yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
                 echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-                cat << EOC > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
-                {
-                  "agent": {
-                    "metrics_collection_interval": 60,
-                    "run_as_user": "root"
-                  },
-                  "metrics": {
-                    "append_dimensions": {
-                      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
-                      "ImageId": "$${aws:ImageId}",
-                      "InstanceId": "$${aws:InstanceId}",
-                      "InstanceType": "$${aws:InstanceType}"
-                    },
-                    "metrics_collected": {
-                      "cpu": {
-                        "measurement": [
-                          "cpu_usage_idle",
-                          "cpu_usage_user",
-                          "cpu_usage_system"
-                        ],
-                        "metrics_collection_interval": 60,
-                        "totalcpu": true
-                      },
-                      "disk": {
-                        "measurement": ["used_percent"],
-                        "metrics_collection_interval": 60,
-                        "resources": ["*"]
-                      },
-                      "mem": {
-                        "measurement": ["mem_used_percent"],
-                        "metrics_collection_interval": 60
-                      }
-                    }
-                  }
-                }
-                EOC
-                /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
-                  -a fetch-config \
-                  -m ec2 \
-                  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json \
-                  -s
                 EOF
 }
 
@@ -150,51 +110,11 @@ variable "user_data_script_b" {
   default     = <<-EOF
                 #!/bin/bash
                 yum update -y
-                yum install -y mariadb amazon-cloudwatch-agent nginx
+                sudo dnf install -y mariadb105
+                yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
                 echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-                cat << EOC > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
-                {
-                  "agent": {
-                    "metrics_collection_interval": 60,
-                    "run_as_user": "root"
-                  },
-                  "metrics": {
-                    "append_dimensions": {
-                      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
-                      "ImageId": "$${aws:ImageId}",
-                      "InstanceId": "$${aws:InstanceId}",
-                      "InstanceType": "$${aws:InstanceType}"
-                    },
-                    "metrics_collected": {
-                      "cpu": {
-                        "measurement": [
-                          "cpu_usage_idle",
-                          "cpu_usage_user",
-                          "cpu_usage_system"
-                        ],
-                        "metrics_collection_interval": 60,
-                        "totalcpu": true
-                      },
-                      "disk": {
-                        "measurement": ["used_percent"],
-                        "metrics_collection_interval": 60,
-                        "resources": ["*"]
-                      },
-                      "mem": {
-                        "measurement": ["mem_used_percent"],
-                        "metrics_collection_interval": 60
-                      }
-                    }
-                  }
-                }
-                EOC
-                /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
-                  -a fetch-config \
-                  -m ec2 \
-                  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json \
-                  -s
                 EOF
 }
 
