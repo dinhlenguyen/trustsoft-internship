@@ -102,10 +102,10 @@ resource "aws_cloudwatch_metric_alarm" "ec2_b_memory_high" {
 ########################################
 
 resource "aws_cloudwatch_metric_alarm" "ec2_a_disk_high" {
-  alarm_name          = "ec2-a-disk-high-internship-dinh"
-  namespace           = "CWAgent"
-  metric_name         = "disk_used_percent"
-  dimensions          = {
+  alarm_name  = "ec2-a-disk-high-internship-dinh"
+  namespace   = "CWAgent"
+  metric_name = "disk_used_percent"
+  dimensions = {
     InstanceId = aws_instance.web_a_internship_dinh.id,
     path       = "/",
     fstype     = "xfs"
@@ -122,10 +122,10 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_disk_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ec2_b_disk_high" {
-  alarm_name          = "ec2-b-disk-high-internship-dinh"
-  namespace           = "CWAgent"
-  metric_name         = "disk_used_percent"
-  dimensions          = {
+  alarm_name  = "ec2-b-disk-high-internship-dinh"
+  namespace   = "CWAgent"
+  metric_name = "disk_used_percent"
+  dimensions = {
     InstanceId = aws_instance.web_b_internship_dinh.id,
     path       = "/",
     fstype     = "xfs"
