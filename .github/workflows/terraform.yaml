@@ -5,6 +5,7 @@ on:
     branches:
       - cicd
       - s3-upload-form
+      - itops
 
 env:
   AWS_REGION: eu-west-1
