@@ -50,6 +50,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_b_cpu_high_internship_dinh" {
   threshold           = 90
   dimensions = {
     InstanceId = aws_instance.web_b_internship_dinh.id
+
   }
   treat_missing_data = "notBreaching"
   alarm_description  = "Alarm when EC2-B CPU exceeds 90% for 4 minutes"
@@ -67,7 +68,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_b_cpu_high_internship_dinh" {
 
 resource "aws_cloudwatch_metric_alarm" "ec2_a_memory_high" {
   alarm_name          = "ec2-a-memory-high-internship-dinh"
-  namespace           = "CWAgent"
+  namespace           = "Dinh"
   metric_name         = "mem_used_percent"
   dimensions          = { InstanceId = aws_instance.web_a_internship_dinh.id }
   statistic           = "Average"
@@ -83,7 +84,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_memory_high" {
 
 resource "aws_cloudwatch_metric_alarm" "ec2_b_memory_high" {
   alarm_name          = "ec2-b-memory-high-internship-dinh"
-  namespace           = "CWAgent"
+  namespace           = "Dinh"
   metric_name         = "mem_used_percent"
   dimensions          = { InstanceId = aws_instance.web_b_internship_dinh.id }
   statistic           = "Average"
@@ -103,11 +104,12 @@ resource "aws_cloudwatch_metric_alarm" "ec2_b_memory_high" {
 
 resource "aws_cloudwatch_metric_alarm" "ec2_a_disk_high" {
   alarm_name  = "ec2-a-disk-high-internship-dinh"
-  namespace   = "CWAgent"
+  namespace   = "Dinh"
   metric_name = "disk_used_percent"
   dimensions = {
     InstanceId = aws_instance.web_a_internship_dinh.id,
     path       = "/",
+    device     = "xvda1",
     fstype     = "xfs"
   }
   statistic           = "Average"
@@ -123,11 +125,12 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_disk_high" {
 
 resource "aws_cloudwatch_metric_alarm" "ec2_b_disk_high" {
   alarm_name  = "ec2-b-disk-high-internship-dinh"
-  namespace   = "CWAgent"
+  namespace   = "Dinh"
   metric_name = "disk_used_percent"
   dimensions = {
     InstanceId = aws_instance.web_b_internship_dinh.id,
     path       = "/",
+    device     = "xvda1",
     fstype     = "xfs"
   }
   statistic           = "Average"
