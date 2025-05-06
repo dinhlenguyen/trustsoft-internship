@@ -193,6 +193,198 @@ Once the image is processed, its metadata (name, surname, original image URL, an
   <img src="./assets/rds_example.png" alt="RDS Database Example" width="100%" />
 </p>
 
+---
+
+## 1️⃣ Task 1 - CPU Usage Troubleshooting Guide
+
+### Problem
+
+The customer reported **high CPU usage** on the server. Identify the source of high CPU usage and eliminate the cause.
+
+## Step-by-Step Solution
+
+### 1. Identify High CPU Usage Process
+
+Use `top` to identify which process is consuming high CPU:
+
+```bash
+top
+```
+
+Note the PID of the high CPU usage process. In this case, it was the `yes` command.
+
+Kill the process:
+
+```bash
+sudo kill -9 <PID>
+```
+
+If the process restarts, proceed to the next step.
+
+### 2. Investigate the Restarted Process
+
+Check the parent and details of the new `yes` process:
+
+```bash
+ps -o pid,ppid,user,cmd -p $(pgrep yes)
+```
+
+Example output:
+
+```
+PID    PPID USER     CMD
+48155  48154 root     yes
+```
+
+Get more information about the parent process:
+
+```bash
+ps -fp 48154
+```
+
+Example output:
+
+```
+UID          PID    PPID  C STIME TTY          TIME CMD
+root       48154       1  0 07:19 ?        00:00:00 /bin/bash /usr/local/bin/systemd-helper
+```
+
+**Observation**: Parent PID is `1` (init), indicating the process is launched by **systemd** at boot.
+
+### 3. Examine the Script
+
+Check what the `systemd-helper` script is doing:
+
+```bash
+sudo cat /usr/local/bin/systemd-helper
+```
+
+Output:
+
+```bash
+#!/bin/bash
+while true; do
+  yes > /dev/null &
+  sleep 1
+done
+```
+
+This script forks a new `yes` process every second — causing high CPU load.
+
+### 4. Locate and Stop the Service
+
+Find the corresponding systemd unit:
+
+```bash
+grep -rl 'systemd-helper' /etc/systemd/system/
+```
+
+Stop and disable the service:
+
+```bash
+sudo systemctl stop systemd-helper.service
+sudo systemctl disable systemd-helper.service
+```
+
+Also stop any related timers or services (if applicable):
+
+```bash
+sudo systemctl stop health-check.timer
+sudo systemctl disable health-check.timer
+
+sudo systemctl stop health-check.service
+sudo systemctl disable health-check.service
+```
+
+### 5. Clean Up
+
+Remove the malicious or misbehaving script and service definition:
+
+```bash
+sudo rm /usr/local/bin/systemd-helper
+sudo rm /etc/systemd/system/systemd-helper.service
+```
+
+Reload systemd to apply the changes:
+
+```bash
+sudo systemctl daemon-reload
+```
+
+## ✅ Resolution
+
+The high CPU usage was caused by a systemd service continuously launching `yes > /dev/null` in an infinite loop. The issue was resolved by stopping and disabling the service, deleting the associated script and unit file, and reloading systemd.
+
+---
+
+## 2️⃣ Task 2 - EC2 Application & Connectivity Issue
+
+### Problem
+
+A customer reported that their application was not running on an EC2 instance and they were unable to connect to it via **AWS Systems Manager (SSM)**.
+
+
+### Issue Investigation & Diagnosis
+
+1. **Initial Check:**
+   - Verified that the EC2 instance was not reachable through **SSM Session Manager**.
+
+2. **System Log Review:**
+   - Checked **system logs** from the EC2 instance console.
+   - Observed an error related to boot failure due to a misconfigured `/etc/fstab` file.
+
+3. **Identified Cause:**
+   - The `fstab` file had incorrect or duplicate mount entries, leading to boot failure:
+
+     ```bash
+     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 / xfs defaults,noatime 1 1
+     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 /var xfs defaults,noatime 1 1
+     UUID=DED7-C018 /boot/efi vfat defaults,noatime,uid=0,gid=0,umask=0077,shortname=winnt,x-systemd.automount 0 2
+     UUID=11111111-2222-3333-4444-555555555555 /mnt/kaput xfs defaults 0 2
+     ```
+
+### Fix Procedure
+
+1. **Create Rescue Environment:**
+   - Launched a new EC2 instance in the **same private subnet**.
+   - Stopped the original broken EC2 instance.
+
+2. **Detach & Attach Volume:**
+   - Detached the **root volume** from the broken EC2.
+   - Attached it to the **rescue instance** as a secondary volume (e.g., `/dev/xvdf`).
+
+3. **Mount & Fix `fstab`:**
+   - Connected to the rescue instance via **Session Manager**.
+   - Mounted the attached volume:
+
+     ```bash
+     sudo mkdir /mnt/rescue
+     sudo mount /dev/xvdf1 /mnt/rescue
+     ```
+
+   - Edited the `fstab` file:
+
+     ```bash
+     sudo nano /mnt/rescue/etc/fstab
+     ```
+
+   - **Fixed content** by removing problematic lines:
+     - Deleted the `/var` duplicate mount.
+     - Deleted the `/mnt/kaput` mount with a fake UUID.
+     - Saved and closed the file.
+
+4. **Reattach & Restore:**
+   - Unmounted and detached the volume from the rescue instance.
+   - Reattached the volume as the **root volume** on the original EC2 instance.
+
+### ✅ Resolution
+
+- Booted the original EC2 instance.
+- The instance successfully registered with SSM.
+- Application became reachable and operational.
+- Health checks passed.
+
+---
 
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
