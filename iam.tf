@@ -113,29 +113,29 @@ DOC
 }
 
 resource "aws_ssm_parameter" "cw_agent_config" {
-  name  = "Cloudwatch-agent-internship-dinh"
-  type  = "String"
-  overwrite = true  # Optional, useful if parameter already exists
+  name      = "Cloudwatch-agent-internship-dinh"
+  type      = "String"
+  overwrite = true # Optional, useful if parameter already exists
   value = jsonencode({
     agent = {
       metrics_collection_interval = 300
-      run_as_user                = "root"
+      run_as_user                 = "root"
     }
     metrics = {
-      namespace         = "Dinh"
+      namespace = "Dinh"
       append_dimensions = {
         InstanceId = "$${aws:InstanceId}"
       }
       metrics_collected = {
         mem = {
-          measurement                = ["mem_used_percent"]
+          measurement                 = ["mem_used_percent"]
           metrics_collection_interval = 5
         }
         disk = {
-          measurement                = ["disk_used_percent"]
+          measurement                 = ["disk_used_percent"]
           metrics_collection_interval = 5
-          resources                  = ["/"]
-          ignore_file_system_types   = ["tmpfs", "devtmpfs"]
+          resources                   = ["/"]
+          ignore_file_system_types    = ["tmpfs", "devtmpfs"]
         }
       }
     }
