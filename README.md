@@ -8,45 +8,31 @@ This branch also includes tasks from **IT Operations** team with my solutions.
 
 ```plaintext
 ts-internship/
-├── .github/
-│   └── workflows/
-│       └── terraform.yaml          # GitHub Actions CI/CD pipeline
 ├── assets/
 │   └── trustsoft-internship-diagram.png  # Architecture diagram
-├── cicd/
-│   ├── app.js                      # JS for upload form
-│   ├── index_a.html                # HTML for EC2 Instance A
-│   └── index_b.html                # HTML for EC2 Instance B
 ├── infra-bootstrap/
 │   └── backend_setup.tf            # Terraform remote state backend
-├── lambda-grayscale/
-│   ├── packaged/
-│   │   ├── lambda_function.zip     # Zipped deployment package
-│   │   └── layer.zip               # Lambda layer
-│   ├── lambda_function.py          # Python script for grayscale conversion
-│   └── requirements.txt            # Python dependencies
 │
 ├── .gitignore
 ├── alb.tf                          # Application Load Balancer config
-├── cloudwatch_alarm.tf             # CloudWatch alarms for EC2
-├── ec2.tf                          # EC2 instances and setup
-├── iam.tf                          # IAM roles and policies for EC2 and Lambda
-├── lambda_image.tf                 # Lambda + permissions + trigger
+├── auto-scaling.tf                 # Autoscaling group config
+├── iam.tf                          # IAM roles and policies for EC2
 ├── outputs.tf                      # Terraform outputs
 ├── providers.tf                    # Provider & backend config
-├── rds.tf                          # RDS MySQL instance
 ├── README.md
-├── s3_cicd.tf                      # S3 bucket for HTML CI/CD
-├── upload_form.tf                  # Upload form integration
 ├── variables.tf                    # Input variables
 └── vpc_sg.tf                       # VPC, subnets, routing, SGs
 ```
 
-## 🌐 What Gets Created
-- **CI/CD Pipeline**:
-  - Terraform provisioning (`init` → `fmt` → `validate` → `plan` → `apply`)
-  - Deployment of HTML, JS files to EC2 via SSM
+---
+## 🖼️ Architecture Diagram
+<p align="center">
+  <img src="./assets/trustsoft-internship-ASG.png" alt="Architecture Diagram">
+</p>
 
+---
+
+## 🌐 What Gets Created
 - **VPC & Networking**:
   - VPC with public/private subnets across two Availability Zones
   - Internet Gateway (for public access) and NAT Gateway (for secure EC2 updates)
@@ -54,32 +40,17 @@ ts-internship/
 - **Security Groups**:
   - ALB allows HTTP from the internet
   - EC2 instances accept HTTP only from the ALB
-  - Lambda has access to RDS via security group rules
 
 - **Application Load Balancer (ALB)**:
   - Routes user traffic to EC2 instances in private subnets
 
-- **EC2 Instances** (Private Subnets):
-  - Nginx servers hosting a UI with an upload form
-  - Connected to a serverless backend via S3-triggered Lambda
+- **Auto Scaling Group (ASG)**:
+  - Automatically manages EC2 instances in private subnets based on CPU utilization
+  - Scales out (adds instances) if CPU utilization exceeds 70% for 2 minutes
+  - Scales in (removes instances) if CPU utilization drops below 30% for 2 minutes
+  - Instances are created using a Launch Template, ensuring consistent configuration
+  - Integrated with an Application Load Balancer (ALB) for traffic distribution
 
-- **Amazon Cognito Identity Pool**:
-  - Enables unauthenticated user access to upload images to S3 securely
-  - Federated identity integrated into the frontend JS for direct S3 uploads
-
-- **S3 Buckets**:
-  - One for storing uploaded original images
-  - One for storing transformed grayscale images
-  - One for storing CICD HTML artifacts
-
-- **Lambda Function**:
-  - Triggered on S3 `put` event
-  - Converts the image to grayscale
-  - Uploads the grayscale version to S3
-  - Writes metadata (name, surname, S3 URLs) to RDS
-
-- **RDS (MySQL)**:
-  - Stores metadata about uploaded images (name, surname, original image URL, grayscale image URL)
 
 - **CloudWatch Monitoring**:
   - CPU alarms for both EC2 instances with SNS email notifications
@@ -90,109 +61,48 @@ ts-internship/
 
 ---
 
-## 🔄 CI/CD Pipeline
+## 🚀 How to Start This Branch
 
-The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both infrastructure and front-end updates on pushes to the `cicd` branch:
+### Step 1: Initialize Terraform
+```bash
+terraform init
+```
 
-1. **Trigger**  
-   - Runs automatically whenever you push to the `cicd` branch.
+### Step 2: Validate Configuration
+```bash
+terraform validate
+```
 
-2. **Terraform Lifecycle**  
-   - `terraform init`  
-   - `terraform fmt`  
-   - `terraform validate`  
-   - `terraform plan`  
-   - `terraform apply` (provisions or updates your VPC, EC2s, ALB, S3 backend, etc.)
+### Step 3: Plan the Infrastructure
+```bash
+terraform plan
+```
 
-3. **Upload HTML Artifacts**  
-   - Pushes `cicd/index_a.html`, `cicd/index_b.html` and `cicd/app.js` to the S3 bucket `s3-cicd-internship-dinh`.
+### Step 4: Apply the Configuration
+```bash
+terraform apply -auto-approve
+```
 
-4. **Deploy to EC2 via SSM**  
-   - **Instance A** (`tag:Name=ec2_web_a_internship_dinh`):  
-     - Downloads `index_a.html` and `app.js` from S3  
-     - Overwrites `/usr/share/nginx/html/index.html` and `/usr/share/nginx/html/app.js`
-     - Restarts the Nginx service  
-   - **Instance B** (`tag:Name=ec2_web_b_internship_dinh`):  
-     - Downloads `index_b.html` and `app.js` from S3  
-     - Overwrites `/usr/share/nginx/html/index.html` and `/usr/share/nginx/html/app.js`
-     - Restarts the Nginx service  
+### Step 5: Import Existing VPC Flow Log Group (if already exists)
+If the VPC Flow Log Group already exists, import it to avoid duplication:
+```bash
+terraform import aws_cloudwatch_log_group.log_group vpc_log_group_internship_dinh
+```
 
-**Note:** Ensure AWS credentials are configured as GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and optionally `AWS_SESSION_TOKEN` and `DB_PASSWORD`) so the workflow can authenticate and perform AWS operations.  
+### Step 6: Start a Session in Session Manager
+- Go to the AWS Systems Manager Console.
+- Navigate to "Session Manager".
+- Start a new session with the EC2 instances created by the Auto Scaling Group.
 
-<p align="center">
-  <img src="./assets/trustsoft-internship-diagram-2.png" alt="Architecture Diagram">
-</p>
+### Step 7: Maximize CPU Usage for Testing
+- For each EC2 instance, run the following command:
+```bash
+stress --cpu $(nproc) --timeout 300
+```
+- This will automatically detect the number of CPU cores and max them out for 5 minutes.
 
----
-
-## 🧩 System Architecture
-
-### 🔷 High-Level Architecture
-
-<p align="center">
-  <img src="./assets/trustsoft-internship-diagram-4.png" alt="Architecture Diagram" />
-</p>
-
-This diagram shows the main components and data flow in the grayscale image processing application:
-
-- **User** accesses the application through a browser and uploads an image via the EC2 web interface behind an **Application Load Balancer (ALB)**
-- **Amazon Cognito** is used for identity and credential management, providing temporary credentials for uploading to S3
-- The uploaded image is saved to an **S3 bucket** `s3-upload-form-internship-dinh`
-- An **AWS Lambda function** is automatically triggered upon upload, which:
-  - Downloads the original image
-  - Converts it to grayscale using Pillow
-  - Uploads the processed image to another S3 bucket `s3-lambda-internship-dinh`
-  - Stores metadata (name, surname, original image URL, grayscale image URL) in an **RDS MySQL** database
-
-### 🔄 Sequence of Operations
-
-<p align="center">
-  <img src="./assets/trustsoft-internship-diagram-3.png" alt="Sequence Diagram" />
-</p>
-
-The sequence diagram illustrates the interaction between services:
-
-1. The **user** uploads an image through a form.
-2. The **EC2 instance** handles the HTTP request and uploads the image to the **original S3 bucket**.
-3. This triggers the **Lambda function**, which:
-   - Downloads the uploaded image
-   - Converts it to grayscale
-   - Uploads the new image to the **grayscale S3 bucket**
-   - Inserts metadata (name, surname, URLs) into the **RDS database**
-4. The EC2 instance polls or waits, then fetches and displays the processed image to the user.
-
----
-
-## 🔐 Accessing the RDS Database
-
-To securely access the RDS MySQL database, you must use **AWS Systems Manager (SSM)** to tunnel into the private EC2 environment.
-
-### Security considerations
-- RDS **allows** inbound MySQL traffic (port 3306) from EC2's security group
-- EC2 instances **don't allow** SSH connection (port 22), use SSM to connect 
-
-### Instructions
-
-1. Start a session with EC2 using SSM (e.g. via AWS Console)
-2. run `mysql -h your-rds-endpoint -u admin -p grayscaledb`, your `your-rds-endpoint` is one of the outputs
-3. enter `db_password` when prompted
-4. run `SELECT * FROM uploads;` to query 
-
----
-
-## 🖼️ Example Output
-
-Below is an example of a successfully uploaded and processed grayscale image. The user enters their name, selects an image, and submits it. The image is converted to grayscale by a Lambda function and displayed directly on the page.
-
-<p align="center">
-  <img src="./assets/web_example.png" alt="Grayscale Upload Example" width="40%" />
-</p>
-
-Once the image is processed, its metadata (name, surname, original image URL, and grayscale image URL) is saved into an RDS MySQL database:
-
-<p align="center">
-  <img src="./assets/rds_example.png" alt="RDS Database Example" width="100%" />
-</p>
+### ✅ Result
+- The Auto Scaling Group should automatically add new instances if the CPU exceeds the configured threshold.
 
 ---
 
