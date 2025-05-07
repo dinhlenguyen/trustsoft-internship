@@ -1,7 +1,6 @@
-# 🚀 Trustsoft Internship - Terraform AWS Infrastructure (CI/CD + S3 Upload Pipeline)
+# 🚀 Trustsoft Internship - Terraform AWS Infrastructure (IT Operations)
 
-> **This branch builds on top of the [`itops`](https://github.com/dinhlenguyen/trustsoft-internship/tree/s3-upload-form)** (infrastructure CI/CD pipeline) and integrates an S3 upload pipeline in this branch to deliver a full-stack automated grayscale image processing workflow using S3, Lambda, and RDS.
-This branch also includes tasks from **IT Operations** team with my solutions.
+> **This branch builds on top of the [`s3-upload-form`](https://github.com/dinhlenguyen/trustsoft-internship/tree/s3-upload-form)** - fully implemented grayscale processing web app using S3, Lambda and RDS with fuctional CI/CD pipeline. Branch also includes documentation of troubleshooting tasks from **IT Operations** team with my solutions. Files and documentation related to tasks focused on adding monitoring to current infrastructure is highlighted🔶 in the project structure below.
 
 ---
 ## 📦 Project Structure
@@ -28,17 +27,20 @@ ts-internship/
 │
 ├── .gitignore
 ├── alb.tf                          # Application Load Balancer config
-├── cloudwatch_alarm.tf             # CloudWatch alarms for EC2
+├── 🔶cloudwatch_alarm.tf           # CloudWatch alarms for EC2
+├── 🔶config_rules.tf               # Config rules for required tags
 ├── ec2.tf                          # EC2 instances and setup
-├── iam.tf                          # IAM roles and policies for EC2 and Lambda
+├── 🔶iam_ssm.tf                    # IAM roles and policies for EC2 and Lambda, SSM agent setup
 ├── lambda_image.tf                 # Lambda + permissions + trigger
 ├── outputs.tf                      # Terraform outputs
 ├── providers.tf                    # Provider & backend config
 ├── rds.tf                          # RDS MySQL instance
 ├── README.md
 ├── s3_cicd.tf                      # S3 bucket for HTML CI/CD
+├── 🔶sns_ec2_check.tf              # SNS notifications for EC2 status checks
 ├── upload_form.tf                  # Upload form integration
 ├── variables.tf                    # Input variables
+├── 🔶vpc_flowlogs.tf               # VPC Flow Logs configuration
 └── vpc_sg.tf                       # VPC, subnets, routing, SGs
 ```
 
@@ -81,10 +83,33 @@ ts-internship/
 - **RDS (MySQL)**:
   - Stores metadata about uploaded images (name, surname, original image URL, grayscale image URL)
 
+- **🔶VPC Flow Logs**:
+  - Monitors and logs network traffic within the VPC.
+  - Captures all traffic (accepted, rejected, and all types) for analysis.
+  - Retention in days was set to 3 days
+  - Logs are stored in a CloudWatch Log Group
+  - Configured with an IAM Role with appropriate CloudWatch permissions.
+  > Be aware that once **log group** is created, it won't be deleted via terraform destroy. For more information[`here`](https://github.com/hashicorp/terraform-provider-aws/issues/29247).
+
+- **🔶Config Rule - Required Tags**:
+  - Enforces a tagging policy for EC2 instances using AWS Config.
+  - The rule ensures that all EC2 instances have the following required tags:
+    - **Name**: Descriptive name for the instance.
+    - **Environment**: Specifies the environment (e.g., Dev, Test, Prod).
+  - Automatically evaluates compliance for each EC2 instance in the VPC.
+  - Non-compliant instances are flagged in AWS Config.
+
 - **CloudWatch Monitoring**:
   - CPU alarms for both EC2 instances with SNS email notifications
+  
+- **🔶SNS EC2 Status Check Alerts**:
+  - Monitors the status of both EC2 instances
+  - Sends notifications to a configured email address (`lend03@vse.cz`) via SNS if a status check fails.
+  - CloudWatch Alarms:
+    - **EC2-A-Status-Check-Failed**: Triggered if Instance A fails a status check.
+    - **EC2-B-Status-Check-Failed**: Triggered if Instance B fails a status check.
 
-- **CloudWatch Agent Setup via SSM**:
+- **🔶CloudWatch Agent Setup via SSM**:
   - Automated installation and configuration of CloudWatch Agent using SSM Documents.
   - Two SSM Documents:
     - **Install CloudWatch Agent**: Installs and configures CloudWatch Agent using a predefined SSM Parameter for configuration.
@@ -95,7 +120,7 @@ ts-internship/
   - Configuration is stored in **SSM Parameter Store** for easy management.
   - Associated with EC2 instances (Instance A and Instance B) using SSM Associations.
   - Automatically fetches the latest configuration from SSM Parameter Store.
-
+  - For these metrics SNS notification via email was set up with threshold of 90%
 
 - **Remote Terraform State**:
   - Stored securely in encrypted S3 with versioning
@@ -403,6 +428,9 @@ A customer reported that their application was not running on an EC2 instance an
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
+- **Contact:** dnhlenguyen@gmail.com
+
+---
 
 ## Requirements
 
