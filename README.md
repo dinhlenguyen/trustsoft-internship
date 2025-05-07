@@ -1,7 +1,6 @@
-# 🚀 Trustsoft Internship - Terraform AWS Infrastructure (CI/CD + S3 Upload Pipeline)
+# 🚀 Trustsoft Internship - Terraform AWS Infrastructure
 
-> **This branch builds on top of the [`itops`](https://github.com/dinhlenguyen/trustsoft-internship/tree/s3-upload-form)** (infrastructure CI/CD pipeline) and integrates an S3 upload pipeline in this branch to deliver a full-stack automated grayscale image processing workflow using S3, Lambda, and RDS.
-This branch also includes tasks from **IT Operations** team with my solutions.
+>  This branch consists of AWS infrastructure with implementation of **Auto Scaling Group**. Documentation also includes tasks from **IT Operations** team with my solutions.
 
 ---
 ## 📦 Project Structure
