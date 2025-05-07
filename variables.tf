@@ -83,7 +83,18 @@ variable "instance_type" {
 variable "user_data_script" {
   description = "User data script to bootstrap EC2 instances"
   type        = string
-  default     = ""
+  default     = <<-EOF
+                #!/bin/bash
+                yum update -y
+                sudo dnf install -y mariadb105
+                yum install stress -y
+                yum install -y nginx
+                systemctl start nginx
+                systemctl enable nginx
+                INSTANCE_HOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/local-hostname)
+                echo "<h1>Welcome to Server ACG - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                echo "<h2>Instance Hostname: $INSTANCE_HOSTNAME</h2>" >> /usr/share/nginx/html/index.html
+                EOF
 }
 
 ########################################
