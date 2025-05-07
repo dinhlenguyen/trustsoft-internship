@@ -23,10 +23,11 @@ resource "aws_lb" "alb_internship_dinh" {
 ########################################
 
 resource "aws_lb_target_group" "tg_internship_dinh" {
-  name     = "tg-internship-dinh"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc_internship_dinh.id
+  name        = "tg-internship-dinh"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.vpc_internship_dinh.id
+  target_type = "instance"
 
   health_check {
     path                = "/"
@@ -40,22 +41,6 @@ resource "aws_lb_target_group" "tg_internship_dinh" {
   tags = {
     Name = "tg_internship_dinh"
   }
-}
-
-########################################
-# Target Group Attachments (EC2 instances)
-########################################
-
-resource "aws_lb_target_group_attachment" "tg_attachment_a" {
-  target_group_arn = aws_lb_target_group.tg_internship_dinh.arn
-  target_id        = aws_instance.web_a_internship_dinh.id
-  port             = 80
-}
-
-resource "aws_lb_target_group_attachment" "tg_attachment_b" {
-  target_group_arn = aws_lb_target_group.tg_internship_dinh.arn
-  target_id        = aws_instance.web_b_internship_dinh.id
-  port             = 80
 }
 
 ########################################
