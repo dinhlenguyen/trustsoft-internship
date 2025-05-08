@@ -43,18 +43,13 @@ resource "aws_lb_target_group" "tg_internship_dinh" {
 }
 
 ########################################
-# Target Group Attachments (EC2 instances)
+# Target Group Attachments
 ########################################
 
-resource "aws_lb_target_group_attachment" "tg_attachment_a" {
+resource "aws_lb_target_group_attachment" "tg_attachments" {
+  for_each         = aws_instance.web_instances
   target_group_arn = aws_lb_target_group.tg_internship_dinh.arn
-  target_id        = aws_instance.web_a_internship_dinh.id
-  port             = 80
-}
-
-resource "aws_lb_target_group_attachment" "tg_attachment_b" {
-  target_group_arn = aws_lb_target_group.tg_internship_dinh.arn
-  target_id        = aws_instance.web_b_internship_dinh.id
+  target_id        = each.value.id
   port             = 80
 }
 

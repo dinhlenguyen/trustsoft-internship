@@ -81,17 +81,7 @@ variable "instance_type" {
 }
 
 variable "user_data_script" {
-  description = "User data script to bootstrap EC2 instances"
-  type        = string
-  default     = ""
-}
-
-########################################
-# User Data Scripts
-########################################
-
-variable "user_data_script_a" {
-  description = "User data for EC2 Instance A"
+  description = "User data script for EC2 instances"
   type        = string
   default     = <<-EOF
                 #!/bin/bash
@@ -99,20 +89,15 @@ variable "user_data_script_a" {
                 yum install -y nginx
                 systemctl start nginx
                 systemctl enable nginx
-                echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-                EOF
-}
 
-variable "user_data_script_b" {
-  description = "User data for EC2 Instance B"
-  type        = string
-  default     = <<-EOF
-                #!/bin/bash
-                yum update -y
-                yum install -y nginx
-                systemctl start nginx
-                systemctl enable nginx
-                echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                INSTANCE_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)
+                if [[ "$INSTANCE_NAME" == "ec2_web_a_internship_dinh" ]]; then
+                  echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                elif [[ "$INSTANCE_NAME" == "ec2_web_b_internship_dinh" ]]; then
+                  echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                else
+                  echo "<h1>Welcome to Unknown Server - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
+                fi
                 EOF
 }
 
@@ -122,5 +107,5 @@ variable "user_data_script_b" {
 variable "notification_emails" {
   description = "List of email addresses to notify for CloudWatch alarms"
   type        = list(string)
-  default     = []  
+  default     = []
 }

@@ -17,8 +17,10 @@ resource "aws_sns_topic_subscription" "email_internship_dinh" {
 # CPU Utilization Alarms with SNS Actions
 ########################################
 
-resource "aws_cloudwatch_metric_alarm" "ec2_a_cpu_high_internship_dinh" {
-  alarm_name          = "ec2-a-cpu-high-internship-dinh"
+resource "aws_cloudwatch_metric_alarm" "ec2_cpu_high_internship_dinh" {
+  for_each = aws_instance.web_instances
+
+  alarm_name          = "${each.key}-cpu-high-internship-dinh"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
@@ -27,9 +29,9 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_cpu_high_internship_dinh" {
   statistic           = "Average"
   threshold           = 10
 
-  alarm_description = "Alarm when EC2-A CPU exceeds 10% for 4 minutes"
+  alarm_description = "Alarm when ${each.key} CPU exceeds 10% for 4 minutes"
   dimensions = {
-    InstanceId = aws_instance.web_a_internship_dinh.id
+    InstanceId = each.value.id
   }
 
   treat_missing_data = "notBreaching"
@@ -39,31 +41,6 @@ resource "aws_cloudwatch_metric_alarm" "ec2_a_cpu_high_internship_dinh" {
   ok_actions    = [aws_sns_topic.alarms_internship_dinh.arn]
 
   tags = {
-    Name = "alarm_ec2_a_cpu_internship_dinh"
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "ec2_b_cpu_high_internship_dinh" {
-  alarm_name          = "ec2-b-cpu-high-internship-dinh"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = 120
-  statistic           = "Average"
-  threshold           = 10
-
-  alarm_description = "Alarm when EC2-B CPU exceeds 10% for 4 minutes"
-  dimensions = {
-    InstanceId = aws_instance.web_b_internship_dinh.id
-  }
-
-  treat_missing_data = "notBreaching"
-
-  alarm_actions = [aws_sns_topic.alarms_internship_dinh.arn]
-  ok_actions    = [aws_sns_topic.alarms_internship_dinh.arn]
-
-  tags = {
-    Name = "alarm_ec2_b_cpu_internship_dinh"
+    Name = "alarm_${each.key}_cpu_internship_dinh"
   }
 }
