@@ -471,24 +471,25 @@ A customer reported that their application was not running on an EC2 instance an
    - Observed an error related to boot failure due to a misconfigured `/etc/fstab` file.
 
 3. **Identified Cause:**
-   - The `fstab` file had incorrect or duplicate mount entries, leading to boot failure:
+   - The `fstab` file had incorrect entries, leading to boot failure:
 
-     ```bash
-     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 / xfs defaults,noatime 1 1
-     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 /var xfs defaults,noatime 1 1
-     UUID=DED7-C018 /boot/efi vfat defaults,noatime,uid=0,gid=0,umask=0077,shortname=winnt,x-systemd.automount 0 2
-     UUID=11111111-2222-3333-4444-555555555555 /mnt/kaput xfs defaults 0 2
+     ```plaintext
+     [[0;1:31m TIME [0m] Timed out waiting for device [0;1;ai11111-2222-3333-4444-555555555555.
+     [[0;1;38;5;185mDEPEND[0m] Dependency failed for [0;1;39msystai11111-2222-3333-4444-555555555555.
+     [[0;1;38;5;185mDEPEND[0m] Dependency failed for [0;1;39mmnt-kaput.mount[0m - /mnt/kaput.
+     [[0;1;38;5;185mDEPEND[0m] Dependency failed for [0;1;39mlocaís.target[0m - Local File Systems.
+     [[0;1;38;5;185mDEPEND[0m] Dependency failed for [0;1;39mseliáì the need to relabel after reboot.
      ```
 
 ### Fix Procedure
 
 1. **Create Rescue Environment:**
-   - Launched a new EC2 instance in the **same private subnet**.
+   - Launched a new EC2 instance in the **same private subnet** and stop immediately.
    - Stopped the original broken EC2 instance.
 
 2. **Detach & Attach Volume:**
    - Detached the **root volume** from the broken EC2.
-   - Attached it to the **rescue instance** as a secondary volume (e.g., `/dev/xvdf`).
+   - Attached it to the **rescue instance** as a secondary volume (e.g., `/dev/xvdbb`).
 
 3. **Mount & Fix `fstab`:**
    - Connected to the rescue instance via **Session Manager**.
@@ -496,7 +497,7 @@ A customer reported that their application was not running on an EC2 instance an
 
      ```bash
      sudo mkdir /mnt/rescue
-     sudo mount /dev/xvdf1 /mnt/rescue
+     sudo mount /dev/xvdbb /mnt/rescue
      ```
 
    - Edited the `fstab` file:
@@ -504,8 +505,15 @@ A customer reported that their application was not running on an EC2 instance an
      ```bash
      sudo nano /mnt/rescue/etc/fstab
      ```
+   - Upon further inspection of the /etc/fstab file, it was discovered that two entries were using the same UUID:
+     ```bash
+     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 / xfs defaults,noatime 1 1
+     UUID=b1e84820-06b0-4d3b-9b5d-edd836bd5895 /var xfs defaults,noatime 1 1
+     UUID=DED7-C018 /boot/efi vfat defaults,noatime,uid=0,gid=0,umask=0077,shortname=winnt,x-systemd.automount 0 2
+     UUID=11111111-2222-3333-4444-555555555555 /mnt/kaput xfs defaults 0 2
+     ```
 
-   - **Fixed content** by removing problematic lines:
+   - **Fix content** by removing problematic lines:
      - Deleted the `/var` duplicate mount.
      - Deleted the `/mnt/kaput` mount with a fake UUID.
      - Saved and closed the file.
