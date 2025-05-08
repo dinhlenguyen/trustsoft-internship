@@ -530,6 +530,28 @@ In this specific case of having a simple web application, we could use `terrafor
 
 ---
 
+## 🛠️ Potential Upgrades and Next Steps
+
+To further improve the infrastructure and streamline DevOps practices, the following enhancements are recommended:
+
+### Automate Task 1 and Task 2 Detection and Remediation
+- Develop bash or Python scripts for:
+  - **Task 1**: Detecting abnormal CPU usage and tracing the responsible systemd service. Optionally disable or remove the offending scripts automatically.
+  - **Task 2**: Monitoring EC2 boot health, detecting fstab issues, and initiating a rescue workflow. This could include automated detachment/attachment of volumes and repair of fstab entries.
+
+### Automate Update of Frontend and Output Variables (Step 7)
+- Modify the CI/CD pipeline to:
+  - Automatically retrieve and insert the latest **Cognito Identity Pool ID** and **RDS Endpoint** into `cicd/app.js` and `lambda_image.tf`.
+  - Use a Terraform output parser in GitHub Actions to replace these values before triggering the front-end deployment.
+
+### Automate RDS Table Creation (Step 10)
+- Create a script or Terraform `null_resource` with a `local-exec` provisioner to automatically connect to the RDS instance and execute the SQL statement to create the `uploads` table.
+- This removes the need for manual SQL input after provisioning.
+
+These upgrades will help improve automation, reduce manual interventions, and increase deployment reliability.
+
+---
+
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
