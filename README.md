@@ -149,6 +149,10 @@ http://alb-internship-dinh-1842105499.eu-west-1.elb.amazonaws.com/
   - One for storing transformed grayscale images
   - One for storing CICD HTML artifacts
 
+- **Remote Terraform State**:
+  - Stored securely in encrypted S3 with versioning
+  - Uses DynamoDB table for state locking and consistency
+
 - **Lambda Function**:
   - Triggered on S3 `put` event
   - Converts the image to grayscale
@@ -197,9 +201,9 @@ http://alb-internship-dinh-1842105499.eu-west-1.elb.amazonaws.com/
   - Automatically fetches the latest configuration from SSM Parameter Store.
   - For these metrics SNS notification via email was set up with threshold of 90%
 
-- **Remote Terraform State**:
-  - Stored securely in encrypted S3 with versioning
-  - Uses DynamoDB table for state locking and consistency
+<p align="center">
+  <img src="./assets/trustsoft-internship-diagram-monitoring.png" alt="Monitoring Diagram" />
+</p>
 
 ---
 
