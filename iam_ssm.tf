@@ -61,6 +61,9 @@ resource "aws_iam_instance_profile" "ssm_profile_internship_dinh" {
   role = aws_iam_role.ssm_s3_internship_dinh.name
 }
 
+########################################
+# SSM install document
+########################################
 resource "aws_ssm_document" "cw_agent_install" {
   name            = "Linux-InstallCloudWatchAgent-internship-dinh"
   document_type   = "Command"
@@ -95,6 +98,9 @@ mainSteps:
 DOC
 }
 
+########################################
+# SSM update document
+########################################
 resource "aws_ssm_document" "cw_agent_update" {
   name            = "Linux-UpdateCloudWatchAgent-internship-dinh"
   document_type   = "Command"
@@ -112,6 +118,9 @@ mainSteps:
 DOC
 }
 
+########################################
+# SSM parameter
+########################################
 resource "aws_ssm_parameter" "cw_agent_config" {
   name      = "Cloudwatch-agent-internship-dinh"
   type      = "String"
@@ -142,6 +151,9 @@ resource "aws_ssm_parameter" "cw_agent_config" {
   })
 }
 
+########################################
+# SSM associations
+########################################
 resource "aws_ssm_association" "manage_cloudwatch_agent_a" {
   name = aws_ssm_document.cw_agent_install.name
 
