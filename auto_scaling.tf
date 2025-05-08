@@ -71,31 +71,31 @@ resource "aws_autoscaling_policy" "scale_in_policy" {
 # CloudWatch Alarm for Scaling
 ########################################
 
-resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  alarm_name          = "cpu_high_internship_dinh"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = 120
-  statistic           = "Average"
-  threshold           = 70
-  alarm_actions       = [aws_autoscaling_policy.scale_out_policy.arn]
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.asg_internship_dinh.name
+resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
+  for_each = {
+    cpu_high = {
+      name          = "cpu_high_internship_dinh"
+      comparison    = "GreaterThanThreshold"
+      threshold     = 70
+      action        = aws_autoscaling_policy.scale_out_policy.arn
+    },
+    cpu_low = {
+      name          = "cpu_low_internship_dinh"
+      comparison    = "LessThanThreshold"
+      threshold     = 30
+      action        = aws_autoscaling_policy.scale_in_policy.arn
+    }
   }
-}
 
-resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  alarm_name          = "cpu_low_internship_dinh"
-  comparison_operator = "LessThanThreshold"
+  alarm_name          = each.value.name
+  comparison_operator = each.value.comparison
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = 120
   statistic           = "Average"
-  threshold           = 30
-  alarm_actions       = [aws_autoscaling_policy.scale_in_policy.arn]
+  threshold           = each.value.threshold
+  alarm_actions       = [each.value.action]
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.asg_internship_dinh.name
   }
