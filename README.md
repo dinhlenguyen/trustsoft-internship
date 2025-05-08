@@ -10,6 +10,10 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 - Outputs for key resources
 - CI/CD pipeline for infrastructure and front-end updates
 
+> This branch builds on top of the **[`master`](https://github.com/dinhlenguyen/trustsoft-internship/tree/master)** branch. In addition to the main task, it includes a CI/CD pipeline using GitHub Actions to update the front-end.
+
+---
+
 ## 🖼️ Architecture Diagram
 ![Architecture Diagram](./assets/trustsoft-internship-diagram.png)
 
@@ -41,6 +45,7 @@ ts-internship/
 ├── s3_cicd.tf                 # Create S3 bucket to store index.html files 
 └── cloudwatch_alarm.tf        # Defines CPU utilization CloudWatch alarms for both EC2 instances
 ```
+---
 
 ## ⚙️ How to Deploy
 #### 1. Clone the repository
@@ -166,9 +171,14 @@ The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both 
   <img src="./assets/trustsoft-internship-diagram-2.png" alt="CICD pipeline" width="95%" />
 </p>
 
+---
+
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
+- **Contact:** dnhlenguyen@gmail.com
+
+---
 
 ## 📢 Notes
 
@@ -176,6 +186,8 @@ The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both 
 - Load Balancer traffic alternates between EC2 instances (proving health checks and load balancing).
 - The `.terraform.lock.hcl` file is committed for consistent provider versions.
 - Terraform state is securely stored in a remote S3 bucket with DynamoDB locking.
+
+---
 
 ## Requirements
 
