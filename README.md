@@ -325,6 +325,21 @@ sudo systemctl stop systemd-helper.service
 sudo systemctl disable systemd-helper.service
 ```
 
+Find any timers or services that can restard the process:
+```bash
+systemctl list-timers --all
+```
+Example output:
+```bash
+Tue 2025-05-06 09:10:00 UTC 2min 36s left Tue 2025-05-06 09:00:11 UTC 7min ago sysstat-collect.timer            sysstat-collect.service
+Tue 2025-05-06 10:00:00 UTC 52min left    Tue 2025-05-06 09:00:11 UTC 7min ago health-check.timer               health-check.service
+```
+
+Inspect the script:
+```bash
+cat /usr/local/bin/health-check
+```
+
 Also stop any related timers or services (if applicable):
 
 ```bash
@@ -342,6 +357,10 @@ Remove the malicious or misbehaving script and service definition:
 ```bash
 sudo rm /usr/local/bin/systemd-helper
 sudo rm /etc/systemd/system/systemd-helper.service
+
+sudo rm -f /etc/systemd/system/health-check.timer
+sudo rm -f /etc/systemd/system/health-check.service
+sudo rm -f /usr/local/bin/health-check
 ```
 
 Reload systemd to apply the changes:
@@ -415,6 +434,13 @@ A customer reported that their application was not running on an EC2 instance an
 4. **Reattach & Restore:**
    - Unmounted and detached the volume from the rescue instance.
    - Reattached the volume as the **root volume** on the original EC2 instance.
+
+### Workaround fix
+In this specific case of having a simple web application, we could use `terraform taint` command on broken EC2 instance and let `terraform apply` destroy and recreate the instance.
+> For learning purposes this was not an option. 
+
+### Notes
+- For initial troubleshoot we can utilize AWS SAW (Support Automation Workflows) and use **AWSSupport-TroubleshootManagedInstance**. Reviewing the outputs might give an idea on the cause of the problem.
 
 ### ✅ Resolution
 
@@ -545,7 +571,7 @@ No modules.
 | <a name="input_availability_zone_a"></a> [availability\_zone\_a](#input\_availability\_zone\_a) | Availability Zone for Subnet A | `string` | `"eu-west-1a"` | no |
 | <a name="input_availability_zone_b"></a> [availability\_zone\_b](#input\_availability\_zone\_b) | Availability Zone for Subnet B | `string` | `"eu-west-1b"` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region to deploy into | `string` | `"eu-west-1"` | no |
-| <a name="input_db_password"></a> [db\_password](#input\_db\_password) | ####################################### RDS settings ####################################### | `string` | n/a | yes |
+| <a name="input_db_password"></a> [db\_password](#input\_db\_password) |  RDS settings  | `string` | n/a | yes |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | EC2 instance type | `string` | `"t2.micro"` | no |
 | <a name="input_notification_emails"></a> [notification\_emails](#input\_notification\_emails) | List of email addresses to notify for CloudWatch alarms | `list(string)` | <pre>[<br/>  "lend03@vse.cz"<br/>]</pre> | no |
 | <a name="input_private_subnet_cidr_a"></a> [private\_subnet\_cidr\_a](#input\_private\_subnet\_cidr\_a) | CIDR block for Private Subnet A | `string` | `"10.0.1.0/24"` | no |
