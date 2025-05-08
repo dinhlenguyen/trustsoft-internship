@@ -43,6 +43,81 @@ ts-internship/
 ├── 🔶vpc_flowlogs.tf               # VPC Flow Logs configuration
 └── vpc_sg.tf                       # VPC, subnets, routing, SGs
 ```
+---
+
+## ⚙️ How to Deploy
+#### 1. Clone the repository
+```plaintext
+git clone https://github.com/dinhlenguyen/trustsoft-internship.git
+cd trustsoft-internship
+```
+#### 2. Checkout to itops
+```plaintext
+git checkout itops
+```
+#### 3. Initialize Terraform
+```plaintext
+terraform init
+```
+#### 4. Plan the infrastructure
+```plaintext
+terraform plan
+```
+#### 5. Apply the configuration
+```plaintext
+terraform apply
+```
+Confirm `yes` when prompted.
+#### 6. Configure GitHub Secrets 
+Set the following secrets in your GitHub repository settings under Settings > Secrets and Variables > Actions:
+```plaintext
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_SESSION_TOKEN (only if using temporary credentials)
+DB_PASSWORD
+```
+#### 7. Update Cognito Identity Pool ID and RDS endpoint
+After `terraform apply` use the displayed outputs to update:
+- Cognito Identity Pool ID in **app.js (line 4)**  
+- RDS endpoin in **lambda_image.tf (line 146)**
+#### 8. (Optional) Update the lambda function resource
+If you need to force an update to the Lambda function:
+```plaintext
+terraform taint aws_lambda_function.grayscale_image_processor
+terraform apply
+```
+#### 9. Start CI/CD pipeline to update the front-end and Cognito ID
+GitHub actions workflow is triggered by pushing new code into this branch:
+```bash
+git add cicd/app.js
+git commit -m "Update Incognito Identity Pool ID"
+git push origin itops
+```
+#### 10. Create RDS database table
+When the RDS database is created for the first time, you need to manually create the **uploads** table.
+1. Start a session with EC2 using SSM (e.g. via AWS Console)
+2. run `mysql -h your-rds-endpoint -u admin -p grayscaledb`, your `your-rds-endpoint` is one of the outputs
+3. enter `db_password` when prompted
+4. create the uploads table:
+```sql
+CREATE TABLE uploads (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  surname VARCHAR(100),
+  original_url TEXT,
+  grayscale_url TEXT,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### 11. Load the application in the browser
+To access the web application, use URL of **Application Load Balancer (ALB)**, which can be found in th Terraform outputs.
+Example URL:
+```plaintext
+http://alb-internship-dinh-1842105499.eu-west-1.elb.amazonaws.com/
+```
+
+---
 
 ## 🌐 What Gets Created
 - **CI/CD Pipeline**:
