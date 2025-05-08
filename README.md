@@ -123,6 +123,29 @@ stress --cpu $(nproc) --timeout 300 &
 
 ---
 
+## 1. Created Autoscaling Group
+<p align="center">
+  <img src="./assets/trustsoft-internship-console.png">
+</p>
+
+## 2. Stress test exceeds CPU threshold
+<p align="center">
+  <img src="./assets/trustsoft-internship-alarm.png">
+</p>
+
+## 3. New EC2 instance is created
+<p align="center">
+  <img src="./assets/trustsoft-internship-ec2-add.png">
+</p>
+
+## 4. Stress is finished, EC2 instance shutdown
+<p align="center">
+  <img src="./assets/trustsoft-internship-low.png">
+  <img src="./assets/trustsoft-internship-shutdown.png">
+</p>
+
+---
+
 ## 1️⃣ Task 1 - CPU Usage Troubleshooting Guide
 
 ### Problem
