@@ -15,11 +15,13 @@ ts-internship/
 ├── .gitignore
 ├── alb.tf                          # Application Load Balancer config
 ├── auto-scaling.tf                 # Autoscaling group config
+├── config_rules.tf               # Config rules for required tags
 ├── iam.tf                          # IAM roles and policies for EC2
 ├── outputs.tf                      # Terraform outputs
 ├── providers.tf                    # Provider & backend config
 ├── README.md
 ├── variables.tf                    # Input variables
+├── vpc_flowlogs.tf               # VPC Flow Logs configuration
 └── vpc_sg.tf                       # VPC, subnets, routing, SGs
 ```
 
@@ -50,6 +52,21 @@ ts-internship/
   - Instances are created using a Launch Template, ensuring consistent configuration
   - Integrated with an Application Load Balancer (ALB) for traffic distribution
 
+- **VPC Flow Logs**:
+  - Monitors and logs network traffic within the VPC.
+  - Captures all traffic (accepted, rejected, and all types) for analysis.
+  - Retention in days was set to 3 days
+  - Logs are stored in a CloudWatch Log Group
+  - Configured with an IAM Role with appropriate CloudWatch permissions.
+  > Be aware that once **log group** is created, it won't be deleted via terraform destroy. For more information[`here`](https://github.com/hashicorp/terraform-provider-aws/issues/29247).
+
+- **Config Rule - Required Tags**:
+  - Enforces a tagging policy for EC2 instances using AWS Config.
+  - The rule ensures that all EC2 instances have the following required tags:
+    - **Name**: Descriptive name for the instance.
+    - **Environment**: Specifies the environment (e.g., Dev, Test, Prod).
+  - Automatically evaluates compliance for each EC2 instance in the VPC.
+  - Non-compliant instances are flagged in AWS Config.
 
 - **CloudWatch Monitoring**:
   - CPU alarms for both EC2 instances with SNS email notifications
@@ -96,9 +113,10 @@ terraform import aws_cloudwatch_log_group.log_group vpc_log_group_internship_din
 ### Step 7: Maximize CPU Usage for Testing
 - For each EC2 instance, run the following command:
 ```bash
-stress --cpu $(nproc) --timeout 300
+stress --cpu $(nproc) --timeout 300 &
 ```
 - This will automatically detect the number of CPU cores and max them out for 5 minutes.
+- The process will run in the background and you can check the cpu usage using `top`
 
 ### ✅ Result
 - The Auto Scaling Group should automatically add new instances if the CPU exceeds the configured threshold.
@@ -299,6 +317,7 @@ A customer reported that their application was not running on an EC2 instance an
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
+- **Contact:** dnhlenguyen@gmail.com
 
 ---
 
