@@ -53,15 +53,19 @@ ts-internship/
 git clone https://github.com/dinhlenguyen/trustsoft-internship.git
 cd trustsoft-internship
 ```
-#### 2. Initialize Terraform
+#### 2. Checkout to cicd branch
+```plaintext
+git checkout cicd
+```
+#### 3. Initialize Terraform
 ```plaintext
 terraform init
 ```
-#### 3. Plan the infrastructure
+#### 4. Plan the infrastructure
 ```plaintext
 terraform plan
 ```
-#### 4. Apply the configuration
+#### 5. Apply the configuration
 ```plaintext
 terraform apply
 ```
