@@ -542,6 +542,24 @@ In this specific case of having a simple web application, we could use `terrafor
 
 To further improve the infrastructure and streamline DevOps practices, the following enhancements are recommended:
 
+### Refactor Resources for Dynamic Configuration
+- Refactor existing Terraform resources to use `for_each` and `count` for better scalability and maintainability:
+  - EC2 instances: Use `for_each` for dynamic creation of multiple instances.
+  - CloudWatch Alarms: Create CPU, Memory, and Disk alarms using `for_each` for all EC2 instances.
+  - Target Group Attachments: Dynamically attach EC2 instances to the ALB target group.
+  - Auto Scaling Policies: Use `for_each` to dynamically manage scale-in and scale-out policies.
+
+### Modularize the Terraform Project
+- Restructure the Terraform configuration to use modules:
+  - Create a `modules/` directory with submodules for each component:
+    - `modules/vpc` for VPC, Subnets, and Security Groups.
+    - `modules/ec2` for EC2 instances and their configurations.
+    - `modules/monitoring` for CloudWatch Alarms and SNS configurations.
+    - `modules/rds` for the RDS instance.
+    - `modules/iam` for IAM Roles and Policies.
+  - Each module should have its own `main.tf`, `variables.tf`, and `outputs.tf` for better organization.
+  - Ensure that modules are reusable and parameterized.
+
 ### Automate Task 1 and Task 2 Detection and Remediation
 - Develop bash or Python scripts for:
   - **Task 1**: Detecting abnormal CPU usage and tracing the responsible systemd service. Optionally disable or remove the offending scripts automatically.
