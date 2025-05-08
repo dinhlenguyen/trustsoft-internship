@@ -237,7 +237,7 @@ The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both 
 **Note:** Ensure AWS credentials are configured as GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and optionally `AWS_SESSION_TOKEN` and `DB_PASSWORD`) so the workflow can authenticate and perform AWS operations.  
 
 <p align="center">
-  <img src="./assets/trustsoft-internship-diagram-2.png" alt="Architecture Diagram">
+  <img src="./assets/trustsoft-internship-diagram-2.png" alt="CI/CD workflow">
 </p>
 
 ---
@@ -247,7 +247,7 @@ The GitHub Actions workflow (`.github/workflows/terraform.yaml`) automates both 
 ### 🔷 High-Level Architecture
 
 <p align="center">
-  <img src="./assets/trustsoft-internship-diagram-4.png" alt="Architecture Diagram" />
+  <img src="./assets/trustsoft-internship-diagram-4.png" alt="high level architecture" />
 </p>
 
 This diagram shows the main components and data flow in the grayscale image processing application:
