@@ -30,6 +30,7 @@ resource "aws_launch_template" "lt_internship_dinh" {
 ########################################
 
 resource "aws_autoscaling_group" "asg_internship_dinh" {
+  name               = "asg_internship_dinh"
   max_size            = 3
   min_size            = 2
   vpc_zone_identifier = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
