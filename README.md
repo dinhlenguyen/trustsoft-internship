@@ -9,6 +9,24 @@ This project provisions a full AWS infrastructure using **Terraform**, including
 - Application Load Balancer (ALB) distributing traffic to both EC2s
 - Outputs for key resources
 
+> This branch represents the main task solution from Architecture/DevOps team.
+
+---
+## 🌿 Branches overview
+- [`master`](https://github.com/dinhlenguyen/trustsoft-internship/tree/master)
+- [`cicd`](https://github.com/dinhlenguyen/trustsoft-internship/tree/cicd) 
+- [`s3-upload-form`](https://github.com/dinhlenguyen/trustsoft-internship/tree/s3-upload-form)
+- [`itops`](https://github.com/dinhlenguyen/trustsoft-internship/tree/itops) 
+- [`auto-scaling-group`](https://github.com/dinhlenguyen/trustsoft-internship/tree/auto-scaling-group) 
+```plaintext
+├── master/                           # Main task by Architecture/DevOps team
+│   ├── cicd/                         # Updated version of master branch with CI/CD pipeline for front-end
+│   │   └── s3-upload-form/           # Updated version of cicd branch with S3 upload functionality and grayscale image processing
+│   │       └── itops/                # Updated version of s3-upload-form with monitoring and IT Operations troubleshooting solutions
+│   └── auto-scaling-group/           # Updated version of master branch with auto-scaling for EC2 instances
+```
+---
+
 ## 🖼️ Architecture Diagram
 ![Architecture Diagram](./assets/trustsoft-internship-diagram.png)
 
@@ -33,6 +51,7 @@ ts-internship/
 ├── iam.tf                  # IAM Role, Policy Attachment, Instance Profile for SSM
 └── cloudwatch_alarm.tf     # Defines CPU utilization CloudWatch alarms for both EC2 instances
 ```
+---
 
 ## ⚙️ How to Deploy
 #### 1. Clone the repository
@@ -53,6 +72,8 @@ terraform plan
 terraform apply
 ```
 Confirm `yes` when prompted.
+
+---
 
 ## 🌐 What Gets Created
 - **VPC** with CIDR `10.0.0.0/16`
@@ -123,9 +144,13 @@ Since the EC2 instances are deployed into private subnets with no public IP and 
 3. Select the EC2 instance you want to connect to.
 4. You get secure shell access directly without needing SSH, keys, or public IPs.
 
+---
+
 ## ✨ Author
 - **Name:** Dinh Le Nguyen
 - **Project:** Trustsoft Internship
+- **Contact:** dnhlenguyen@gmail.com
+---
 
 ## 📢 Notes
 
@@ -133,6 +158,8 @@ Since the EC2 instances are deployed into private subnets with no public IP and 
 - Load Balancer traffic alternates between EC2 instances (proving health checks and load balancing).
 - The `.terraform.lock.hcl` file is committed for consistent provider versions.
 - Terraform state is securely stored in a remote S3 bucket with DynamoDB locking.
+
+---
 
 ## Requirements
 
