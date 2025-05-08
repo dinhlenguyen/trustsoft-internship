@@ -50,6 +50,7 @@ ts-internship/
   - Scales out (adds instances) if CPU utilization exceeds 70% for 2 minutes
   - Scales in (removes instances) if CPU utilization drops below 30% for 2 minutes
   - Instances are created using a Launch Template, ensuring consistent configuration
+    - IAM role and security group created in previous tasks are attached to ASG (later needed for stress test)
   - Integrated with an Application Load Balancer (ALB) for traffic distribution
 
 - **VPC Flow Logs**:
