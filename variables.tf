@@ -98,38 +98,6 @@ variable "user_data_script" {
 }
 
 ########################################
-# User Data Scripts
-########################################
-
-variable "user_data_script_a" {
-  description = "User data for EC2 Instance A"
-  type        = string
-  default     = <<-EOF
-                #!/bin/bash
-                yum update -y
-                sudo dnf install -y mariadb105
-                yum install -y nginx
-                systemctl start nginx
-                systemctl enable nginx
-                echo "<h1>Welcome to Server A - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-                EOF
-}
-
-variable "user_data_script_b" {
-  description = "User data for EC2 Instance B"
-  type        = string
-  default     = <<-EOF
-                #!/bin/bash
-                yum update -y
-                sudo dnf install -y mariadb105
-                yum install -y nginx
-                systemctl start nginx
-                systemctl enable nginx
-                echo "<h1>Welcome to Server B - Internship Dinh</h1>" > /usr/share/nginx/html/index.html
-                EOF
-}
-
-########################################
 # SNS settings
 ########################################
 variable "notification_emails" {
@@ -138,10 +106,3 @@ variable "notification_emails" {
   default     = ["lend03@vse.cz"]
 }
 
-########################################
-# RDS settings
-########################################
-variable "db_password" {
-  type      = string
-  sensitive = true
-}
