@@ -3,6 +3,17 @@
 > **This branch builds on top of the [`cicd`](https://github.com/dinhlenguyen/trustsoft-internship/tree/cicd)** (infrastructure CI/CD pipeline) and integrates an S3 upload pipeline in this branch to deliver a full-stack automated grayscale image processing workflow using S3, Lambda, and RDS. For more information about the architecture itself, please refer to the documentation in the cicd branch.
 
 ---
+## 📑 Table of Contents
+- [📦 Project Structure](#-project-structure)
+- [⚙️ How to Deploy](#️-how-to-deploy)
+- [🌐 What Gets Created](#-what-gets-created)
+- [🔄 CI/CD Pipeline](#-cicd-pipeline)
+- [🧩 System Architecture](#-system-architecture)
+- [🔐 Accessing the RDS Database](#-accessing-the-rds-database)
+- [🖼️ Example Output](#-example-output)
+- [✨ Author](#-author)
+
+---
 ## 📦 Project Structure
 
 ```plaintext
