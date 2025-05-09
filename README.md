@@ -1,7 +1,21 @@
 # 🚀 Trustsoft Internship - Terraform AWS Infrastructure
 
-This project provisions a full AWS infrastructure using **Terraform**, including:
+## 📑 Table of Contents
+- [🌿 Branches Overview](#-branches-overview)
+- [🖼️ Architecture Diagram](#-architecture-diagram)
+- [📦 Project Structure](#-project-structure)
+- [⚙️ How to Deploy](#️-how-to-deploy)
+- [🌐 What Gets Created](#-what-gets-created)
+- [🛡️ Security Considerations](#-security-considerations)
+- [📤 Remote State Management](#-remote-state-management)
+- [📊 CloudWatch Monitoring](#-cloudwatch-monitoring)
+- [🖥️ EC2 Access via Systems Manager Session Manager](#-ec2-access-via-systems-manager-session-manager)
+- [✨ Author](#-author)
+- [📢 Notes](#-notes)
 
+---
+
+This project provisions a full AWS infrastructure using **Terraform**, including:
 - VPC with Public and Private Subnets (across two AZs)
 - Internet Gateway and NAT Gateway
 - Security Groups for ALB and EC2
