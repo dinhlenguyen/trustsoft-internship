@@ -2,6 +2,19 @@
 
 > **This branch builds on top of the [`s3-upload-form`](https://github.com/dinhlenguyen/trustsoft-internship/tree/s3-upload-form)** - fully implemented grayscale processing web app using S3, Lambda and RDS with fuctional CI/CD pipeline. Branch also includes documentation of troubleshooting tasks from **IT Operations** team with my solutions. Files and documentation related to tasks focused on adding monitoring to current infrastructure is highlighted🔶 in the project structure below.
 
+## 📑 Table of Contents
+- [📦 Project Structure](#-project-structure)
+- [⚙️ How to Deploy](#️-how-to-deploy)
+- [🌐 What Gets Created](#-what-gets-created)
+- [🔄 CI/CD Pipeline](#-cicd-pipeline)
+- [🧩 System Architecture](#-system-architecture)
+- [🔐 Accessing the RDS Database](#-accessing-the-rds-database)
+- [🖼️ Example Output](#%EF%B8%8F-example-output)
+- [1️⃣ Task 1 - CPU Usage Troubleshooting Guide](#1%EF%B8%8F-task-1---cpu-usage-troubleshooting-guide)
+- [2️⃣ Task 2 - EC2 Application & Connectivity Issue](#2%EF%B8%8F-task-2---ec2-application--connectivity-issue)
+- [🛠️ Potential Upgrades and Next Steps](#%EF%B8%8F-potential-upgrades-and-next-steps)
+- [✨ Author](#-author)
+
 ---
 ## 📦 Project Structure
 
